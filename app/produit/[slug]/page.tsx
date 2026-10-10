@@ -3,9 +3,37 @@ import { PublicProduct } from '@/types'
 import { notFound } from 'next/navigation'
 import { buildWhatsAppLink } from '@/lib/whatsapp'
 import Link from 'next/link'
+import { Metadata } from 'next'
 
 interface Props {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = await createClient()
+  const { data: product } = await supabase
+    .from('public_products')
+    .select('name, short_description, image_url')
+    .eq('slug', slug)
+    .single()
+
+  if (!product) {
+    return {
+      title: 'Produit introuvable - EASY-SUB',
+    }
+  }
+
+  return {
+    title: `${product.name} - EASY-SUB`,
+    description: product.short_description || `Découvrez ${product.name} sur EASY-SUB`,
+    openGraph: {
+      title: `${product.name} - EASY-SUB`,
+      description: product.short_description || `Découvrez ${product.name} sur EASY-SUB`,
+      images: product.image_url ? [{ url: product.image_url }] : [],
+      type: 'website',
+    },
+  }
 }
 
 async function getProduct(slug: string): Promise<PublicProduct | null> {
