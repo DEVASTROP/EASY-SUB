@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Product } from '@/types'
 import { computeMargin } from '@/lib/margin'
-import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { LogoutButton } from './LogoutButton'
 import { DeleteProductButton } from './components/DeleteProductButton'
@@ -18,21 +17,6 @@ async function getProducts(): Promise<Product[]> {
     return []
   }
   return data || []
-}
-
-async function _toggleHidden(productId: string, isHidden: boolean) {
-  const supabase = await createClient()
-  const { error } = await supabase
-    .from('products')
-    .update({ is_hidden: isHidden })
-    .eq('id', productId)
-
-  if (error) {
-    console.error('Error toggling hidden:', error)
-    return false
-  }
-  revalidatePath('/admin')
-  return true
 }
 
 export default async function AdminPage() {

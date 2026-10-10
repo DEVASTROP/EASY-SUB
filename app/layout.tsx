@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="fr">
       <body className="min-h-screen">
         <Header />
-        <main className="pt-16">{children}</main>
+        <main id="main-content" className="pt-32 md:pt-40">{children}</main>
         <WhatsAppFloat />
       </body>
     </html>

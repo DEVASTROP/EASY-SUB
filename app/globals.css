@@ -3,38 +3,33 @@
 @tailwind utilities;
 
 :root {
-  /* G2A/G2G-inspired dark theme */
-  --color-primary: 43 92% 56%;        /* #F9A825 - Gold accent */
-  --color-primary-hover: 45 100% 50%;  /* #FFB300 - Gold hover */
-  --color-primary-foreground: 4 10% 6%;  /* Near-black for text on gold */
-
-  --color-secondary: 14 80% 35%;      /* #00BFA5 - Teal accent */
-  --color-secondary-foreground: 0 0% 100%;
-
-  --color-background: 224 30% 6%;     /* #0B0D12 - Near-black background */
-  --color-foreground: 216 33% 96%;    /* #F0F2F5 - Primary text */
-
-  --color-card: 224 22% 8%;           /* #10131A - Card surface */
-  --color-card-foreground: 216 33% 96%;
-
-  --color-muted: 224 22% 8%;          /* #10131A */
-  --color-muted-foreground: 216 12% 54%; /* #8A9199 - Muted text */
-
-  --color-accent: 224 22% 8%;         /* #10131A */
-  --color-accent-foreground: 216 33% 96%;
-
-  --color-border: 224 18% 12%;        /* #1E2330 - Subtle border */
-  --color-input: 224 22% 8%;
-  --color-ring: 43 92% 56%;
-
+  --color-header: 0 0% 4%;
+  --color-header-foreground: 0 0% 100%;
+  --color-hero: 220 25% 7%;
+  --color-background: 220 14% 96%;
+  --color-surface: 0 0% 100%;
+  --color-foreground: 222 20% 12%;
+  --color-muted-foreground: 220 9% 46%;
+  --color-border: 220 13% 91%;
+  --color-primary: 262 83% 58%;
+  --color-primary-foreground: 0 0% 100%;
+  --color-discount: 16 100% 50%;
+  --color-success: 142 71% 35%;
+  --color-whatsapp: 142 70% 45%;
+  --color-warning: 38 92% 50%;
   --color-destructive: 0 84% 60%;
   --color-destructive-foreground: 0 0% 100%;
-
-  --color-success: 142 76% 36%;
   --color-success-foreground: 0 0% 100%;
-
-  --color-warning: 38 92% 50%;
-  --color-warning-foreground: 4 10% 6%;
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 222 20% 12%;
+  --color-muted: 220 14% 96%;
+  --color-accent: 220 14% 96%;
+  --color-accent-foreground: 222 20% 12%;
+  --color-input: 220 13% 91%;
+  --color-ring: 262 83% 58%;
+  --color-secondary: 220 14% 96%;
+  --color-secondary-foreground: 222 20% 12%;
+  --color-warning-foreground: 0 0% 100%;
 
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -50,7 +45,6 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -69,14 +63,21 @@ body {
   background: hsl(var(--color-muted-foreground));
 }
 
-/* Focus visible styles */
 :focus-visible {
   outline: 2px solid hsl(var(--color-ring));
   outline-offset: 2px;
 }
 
-/* Selection */
 ::selection {
   background-color: hsl(var(--color-primary) / 0.3);
   color: hsl(var(--color-primary-foreground));
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

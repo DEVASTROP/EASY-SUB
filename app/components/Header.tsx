@@ -1,12 +1,24 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { Search, MessageSquare } from 'lucide-react'
+import { createBrowserClient } from '@supabase/ssr'
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  sort_order: number
+}
 
 export function Header() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [scrolled, setScrolled] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,19 +28,36 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navLinks = [
-    { href: '/', label: 'Accueil' },
-    { href: '/catalogue', label: 'Catalogue' },
-    { href: '/#comment-ca-marche', label: 'Comment ça marche' },
-  ]
+  useEffect(() => {
+    async function loadCategories() {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+      const { data } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order', { ascending: true })
+      if (data) setCategories(data)
+    }
+    loadCategories()
+  }, [])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      window.location.href = `/catalogue?q=${encodeURIComponent(searchQuery.trim())}`
+    }
+  }
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 ${
-        scrolled ? 'bg-background/95 backdrop-blur-sm border-b border-border' : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 bg-header text-header-foreground ${
+        scrolled ? 'shadow-lg' : ''
       }`}
       role="banner"
     >
+      {/* Top bar: logo, search, WhatsApp */}
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -41,7 +70,7 @@ export function Header() {
               <rect width="32" height="32" rx="8" fill="currentColor" />
               <path
                 d="M8 16L14 22L24 10"
-                stroke="hsl(var(--color-primary-foreground))"
+                stroke="hsl(var(--color-header-foreground))"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -50,44 +79,97 @@ export function Header() {
             <span className="hidden sm:block">EASY-SUB</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8" aria-label="Navigation principale">
-            {navLinks.map((link) => (
+          {/* Search form - desktop only */}
+          <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 flex-1 max-w-xl mx-8">
+            <label htmlFor="search" className="sr-only">Rechercher</label>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
+              <input
+                id="search"
+                type="search"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Rechercher un abonnement, un jeu..."
+                className="w-full bg-surface border border-border rounded-lg px-10 py-2.5 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
+            >
+              Rechercher
+            </button>
+          </form>
+
+          {/* WhatsApp button + mobile search trigger */}
+          <div className="flex items-center gap-3">
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent('Bonjour, j\'ai une question.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-2 bg-whatsapp text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+              aria-label="Nous contacter sur WhatsApp"
+            >
+              <MessageSquare className="w-5 h-5" aria-hidden="true" />
+              <span>WhatsApp</span>
+            </a>
+
+            {/* Mobile menu button - placeholder for future */}
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-accent text-header-foreground"
+              aria-label="Menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Category nav bar */}
+      <div className="bg-header border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <nav className="flex gap-2 overflow-x-auto scrollbar-hide pb-2" aria-label="Catégories" role="navigation">
+            <Link
+              href="/catalogue"
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                pathname === '/catalogue' && !searchParams.get('category')
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-header-foreground/70 hover:bg-white/10'
+              }`}
+            >
+              Toutes les offres
+            </Link>
+            {categories.map(category => (
               <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href))
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
+                key={category.id}
+                href={`/catalogue?category=${category.slug}`}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  searchParams.get('category') === category.slug
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-header-foreground/70 hover:bg-white/10'
                 }`}
               >
-                {link.label}
+                {category.slug === 'ia-et-outils' && (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                )}
+                {category.slug === 'divertissement' && (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                )}
+                {category.slug === 'jeux' && (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                )}
+                {category.name}
               </Link>
             ))}
           </nav>
-
-          {/* Cart / Account area */}
-          <div className="flex items-center gap-4">
-            <Link
-              href="/#contact"
-              className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Contact WhatsApp
-            </Link>
-            {/* Cart indicator placeholder */}
-            <button
-              className="relative p-2 text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-accent"
-              aria-label="Panier (0 articles)"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
-                0
-              </span>
-            </button>
-          </div>
         </div>
       </div>
     </header>
