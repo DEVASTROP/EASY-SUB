@@ -11,6 +11,7 @@ Small catalog website selling digital subscriptions (Gemini Pro, ChatGPT Plus, C
 ## Hard Rules (Windows/PowerShell)
 - Never chain commands with "&&" - run one command per call
 - Never run "npm run dev" or start any server
+- Never run "npm run build" while "npm run dev" may be running - verification is limited to `npx tsc --noEmit` and `npm run lint`
 - Create/edit files with file tools, never shell redirection/piping
 - Allowed checks: `npx tsc --noEmit` and `npm run lint` after each phase
 - Fix all errors before moving to next phase
