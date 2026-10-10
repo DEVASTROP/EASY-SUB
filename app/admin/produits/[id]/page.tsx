@@ -1,11 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Category } from '@/types'
 import { computeMargin } from '@/lib/margin'
 import { LogoutButton } from '../../LogoutButton'
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
 
 interface ProductFormData {
   name: string
@@ -55,6 +64,7 @@ export default function AdminProductPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [margin, setMargin] = useState({ costXof: 0, marginXof: 0, marginPercent: 0 })
+  const slugEditedRef = useRef(false)
 
   useEffect(() => {
     loadCategories()
@@ -64,6 +74,12 @@ export default function AdminProductPage() {
       setLoading(false)
     }
   }, [isNew])
+
+  useEffect(() => {
+    if (!slugEditedRef.current && formData.name) {
+      setFormData(prev => ({ ...prev, slug: slugify(formData.name) }))
+    }
+  }, [formData.name])
 
   useEffect(() => {
     const m = computeMargin({
@@ -192,7 +208,10 @@ export default function AdminProductPage() {
               <input
                 type="text"
                 value={formData.slug}
-                onChange={e => handleChange('slug', e.target.value)}
+                onChange={e => {
+                  handleChange('slug', e.target.value)
+                  slugEditedRef.current = true
+                }}
                 required
                 className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
