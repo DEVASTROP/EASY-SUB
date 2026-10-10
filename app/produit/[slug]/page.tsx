@@ -120,7 +120,7 @@ export default async function ProductPage({ params }: Props) {
 
             {product.warranty_note && (
               <div className="border-l-4 border-success pl-4 py-2 bg-success/10 rounded-r-lg">
-                <p className="text-sm text-success-foreground">
+                <p className="text-sm text-success">
                   <strong>Garantie : </strong>{product.warranty_note}
                 </p>
               </div>
