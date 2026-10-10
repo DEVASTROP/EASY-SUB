@@ -21,6 +21,8 @@
   --color-destructive-foreground: 0 0% 100%;
   --color-success: 142 76% 36%;
   --color-success-foreground: 0 0% 100%;
+  --color-warning: 38 92% 50%;
+  --color-warning-foreground: 0 0% 100%;
 
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;

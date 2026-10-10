@@ -4,6 +4,7 @@ import { computeMargin } from '@/lib/margin'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { LogoutButton } from './LogoutButton'
+import { DeleteProductButton } from './components/DeleteProductButton'
 
 async function getProducts(): Promise<Product[]> {
   const supabase = await createClient()
@@ -73,6 +74,8 @@ export default async function AdminPage() {
             <tbody className="divide-y">
               {products.map(product => {
                 const margin = computeMargin(product)
+                const marginColor = margin.marginXof < 0 ? 'text-destructive' : margin.marginXof === 0 ? 'text-warning' : 'text-success'
+                const marginPercentColor = margin.marginPercent < 0 ? 'text-destructive' : margin.marginPercent === 0 ? 'text-warning' : 'text-success'
                 return (
                   <tr key={product.id} className={product.is_hidden ? 'opacity-50 bg-muted/30' : ''}>
                     <td className="py-4">
@@ -86,11 +89,15 @@ export default async function AdminPage() {
                     <td className="py-4 text-right text-muted-foreground">
                       {new Intl.NumberFormat('fr-FR').format(margin.costXof)} FCFA
                     </td>
-                    <td className="py-4 text-right font-medium text-success">
-                      {new Intl.NumberFormat('fr-FR').format(margin.marginXof)} FCFA
+                    <td className="py-4 text-right font-medium">
+                      <span className={marginColor}>
+                        {new Intl.NumberFormat('fr-FR').format(margin.marginXof)} FCFA
+                      </span>
                     </td>
-                    <td className="py-4 text-right font-medium text-success">
-                      {margin.marginPercent.toFixed(1)}%
+                    <td className="py-4 text-right font-medium">
+                      <span className={marginPercentColor}>
+                        {margin.marginPercent.toFixed(1)}%
+                      </span>
                     </td>
                     <td className="py-4 text-center">
                       {product.in_stock ? (
@@ -172,12 +179,15 @@ export default async function AdminPage() {
                       </form>
                     </td>
                     <td className="py-4 text-right">
-                      <a
-                        href={`/admin/produits/${product.id}`}
-                        className="text-primary hover:underline text-sm"
-                      >
-                        Modifier
-                      </a>
+                      <div className="flex items-center justify-end gap-2">
+                        <a
+                          href={`/admin/produits/${product.id}`}
+                          className="text-primary hover:underline text-sm"
+                        >
+                          Modifier
+                        </a>
+                        <DeleteProductButton productId={product.id} productName={product.name} />
+                      </div>
                     </td>
                   </tr>
                 )

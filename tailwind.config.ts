@@ -38,6 +38,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--color-success) / <alpha-value>)',
           foreground: 'hsl(var(--color-success-foreground) / <alpha-value>)',
         },
+        warning: {
+          DEFAULT: 'hsl(var(--color-warning) / <alpha-value>)',
+          foreground: 'hsl(var(--color-warning-foreground) / <alpha-value>)',
+        },
       },
       fontFamily: {
         sans: ['var(--font-sans)'],
