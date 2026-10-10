@@ -3,8 +3,9 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Search, MessageSquare, Menu, X } from 'lucide-react'
+import { Search, Menu, X } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
+import { LogoIcon } from './LogoIcon'
 
 interface Category {
   id: string
@@ -93,7 +94,7 @@ export function Header() {
               className="hidden sm:flex items-center gap-2 bg-whatsapp text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
               aria-label="Nous contacter sur WhatsApp"
             >
-              <MessageSquare className="w-5 h-5" aria-hidden="true" />
+              <LogoIcon name="whatsapp" tone="mono" size={20} />
               <span>WhatsApp</span>
             </a>
 

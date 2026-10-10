@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { LogoIcon } from './LogoIcon'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -56,6 +57,9 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               © {currentYear} EASY-SUB. Tous droits réservés.
             </p>
+            <p className="text-xs text-muted-foreground/70">
+              Les noms de marques et logos cités appartiennent à leurs propriétaires respectifs. EASY-SUB n'est pas affilié à ces marques.
+            </p>
             <div className="flex items-center gap-6">
               <a
                 href="#"
@@ -91,9 +95,7 @@ export function Footer() {
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="WhatsApp"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403c-.454-1.805-.777-3.242-.53-3.742.416-.837 1.043-1.642 2.122-2.406.093-.063.155-.14.259-.216.224-.163.613-.159 1.09.036.242.1 1.277 1.194 1.172 1.351-.087.134-1.595 1.988-3.613 2.473-1.937.464-2.492.337-2.492.337" />
-                </svg>
+                <LogoIcon name="whatsapp" tone="mono" size={20} />
               </a>
             </div>
           </div>

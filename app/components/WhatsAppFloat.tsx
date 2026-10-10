@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { MessageSquare } from 'lucide-react'
+import { LogoIcon } from './LogoIcon'
 
 export function WhatsAppFloat() {
   const pathname = usePathname()
@@ -22,7 +22,7 @@ export function WhatsAppFloat() {
       className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-whatsapp text-white rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity"
       aria-label="Nous contacter sur WhatsApp"
     >
-      <MessageSquare className="w-8 h-8" aria-hidden="true" />
+      <LogoIcon name="whatsapp" tone="mono" size={28} />
     </Link>
   )
 }
