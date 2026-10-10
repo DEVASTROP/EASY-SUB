@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import './globals.css'
-import { Header } from './components/Header'
-import { WhatsAppFloat } from './components/WhatsAppFloat'
+import { PublicLayout } from './components/PublicLayout'
 
 export const metadata: Metadata = {
   title: 'EASY-SUB - Abonnements numériques et crédits de jeu',
@@ -18,10 +17,8 @@ export default function RootLayout({
     <html lang="fr">
       <body className="min-h-screen">
         <Suspense fallback={null}>
-          <Header />
+          <PublicLayout>{children}</PublicLayout>
         </Suspense>
-        <main id="main-content" className="pt-32 md:pt-40">{children}</main>
-        <WhatsAppFloat />
       </body>
     </html>
   )

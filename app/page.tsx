@@ -6,7 +6,6 @@ import { CategoryTiles } from './components/CategoryTiles'
 import { ProductRow } from './components/ProductRow'
 import { TrustBar } from './components/TrustBar'
 import { HowItWorks } from './components/HowItWorks'
-import { Footer } from './components/Footer'
 
 async function getCategories(): Promise<Category[]> {
   const supabase = await createClient()
@@ -81,7 +80,6 @@ export default async function HomePage() {
       )}
       <TrustBar />
       <HowItWorks />
-      <Footer />
     </main>
   )
 }
