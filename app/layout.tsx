@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { WhatsAppFloat } from './components/WhatsAppFloat'
 
 export const metadata: Metadata = {
   title: 'EASY-SUB - Abonnements numériques et crédits de jeu',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>
+        {children}
+        <WhatsAppFloat />
+      </body>
     </html>
   )
 }
