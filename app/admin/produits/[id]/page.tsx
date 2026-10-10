@@ -75,11 +75,11 @@ export default function AdminProductPage() {
     }
   }, [isNew])
 
-  useEffect(() => {
-    if (!slugEditedRef.current && formData.name) {
+    useEffect(() => {
+    if (isNew && !slugEditedRef.current && formData.name) {
       setFormData(prev => ({ ...prev, slug: slugify(formData.name) }))
     }
-  }, [formData.name])
+  }, [formData.name, isNew])
 
   useEffect(() => {
     const m = computeMargin({
