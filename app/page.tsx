@@ -169,6 +169,33 @@ export default async function HomePage() {
             )
           ))}
         </section>
+
+        <section className="bg-muted/30 rounded-2xl p-6 md:p-8">
+          <h2 className="text-2xl font-bold text-center mb-8">Comment ça marche</h2>
+          <div className="grid md:grid-cols-3 gap-6 text-center">
+            <div className="p-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="font-semibold mb-2">Choisis ton offre</h3>
+              <p className="text-sm text-muted-foreground">Parcours nos abonnements et crédits de jeu</p>
+            </div>
+            <div className="p-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary">2</span>
+              </div>
+              <h3 className="font-semibold mb-2">Paie par Mobile Money ou dépôt bancaire sur WhatsApp</h3>
+              <p className="text-sm text-muted-foreground">Contacte-nous, on t'envoie les infos de paiement</p>
+            </div>
+            <div className="p-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary">3</span>
+              </div>
+              <h3 className="font-semibold mb-2">Reçois ton produit sur WhatsApp</h3>
+              <p className="text-sm text-muted-foreground">Livraison rapide après confirmation du paiement</p>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   )
