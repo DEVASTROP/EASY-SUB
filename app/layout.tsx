@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { Header } from './components/Header'
 import { WhatsAppFloat } from './components/WhatsAppFloat'
 
 export const metadata: Metadata = {
@@ -14,8 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>
-        {children}
+      <body className="min-h-screen">
+        <Header />
+        <main className="pt-16">{children}</main>
         <WhatsAppFloat />
       </body>
     </html>
