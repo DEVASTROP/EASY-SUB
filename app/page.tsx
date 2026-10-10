@@ -65,7 +65,7 @@ export default async function HomePage() {
   })).filter(({ products }) => products.length > 0)
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <HeroSection />
       {promoProducts.length > 0 && <PromoStrip promoProducts={promoProducts} />}
       {categories.length > 0 && <CategoryTiles categories={categories} products={products} />}
@@ -80,6 +80,6 @@ export default async function HomePage() {
       )}
       <TrustBar />
       <HowItWorks />
-    </main>
+    </div>
   )
 }

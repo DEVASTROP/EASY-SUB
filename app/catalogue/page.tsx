@@ -19,6 +19,15 @@ function calculateDiscountPercent(product: PublicProduct): number {
   return 0
 }
 
+function buildHref(params: SearchParams, changes: Record<string, string | undefined>): string {
+  const searchParams = new URLSearchParams()
+  Object.entries({ ...params, ...changes }).forEach(([key, value]) => {
+    if (value) searchParams.set(key, value)
+  })
+  const qs = searchParams.toString()
+  return qs ? `/catalogue?${qs}` : '/catalogue'
+}
+
 async function getCategories(): Promise<Category[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -140,9 +149,20 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
   })).filter(({ products }) => products.length > 0)
 
   const activeCategory = categories.find(c => c.slug === params.category)
+  const currentSort = params.sort || 'newest'
+  const currentBadge = params.badge
+
+  const sortOptions = [
+    { value: 'newest', label: 'Plus récents' },
+    { value: 'price-asc', label: 'Prix croissant' },
+    { value: 'price-desc', label: 'Prix décroissant' },
+    { value: 'discount-desc', label: 'Plus grosses réductions' },
+  ] as const
+
+  const badges = ['NOUVEAU', 'PROMO', 'HOT'] as const
 
   return (
-    <main className="min-h-screen bg-background pt-32 md:pt-40">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
@@ -159,7 +179,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
               <h3 className="font-semibold mb-3">Catégories</h3>
               <nav className="space-y-2" aria-label="Filtrer par catégorie">
                 <Link
-                  href="/catalogue"
+                  href={buildHref(params, { category: undefined })}
                   className={`block px-3 py-2 rounded-lg transition-colors ${
                     !params.category ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
                   }`}
@@ -169,7 +189,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
                 {categories.map(cat => (
                   <Link
                     key={cat.id}
-                    href={`/catalogue?category=${cat.slug}`}
+                    href={buildHref(params, { category: cat.slug })}
                     className={`block px-3 py-2 rounded-lg transition-colors ${
                       params.category === cat.slug ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
                     }`}
@@ -183,53 +203,40 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
             <div className="bg-surface p-4 rounded-xl border border-border">
               <h3 className="font-semibold mb-3">Trier par</h3>
               <div className="space-y-2">
-                {[
-                  { value: 'newest', label: 'Plus récents' },
-                  { value: 'price-asc', label: 'Prix croissant' },
-                  { value: 'price-desc', label: 'Prix décroissant' },
-                  { value: 'discount-desc', label: 'Plus grosses réductions' },
-                ].map(opt => (
-                  <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="sort"
-                      value={opt.value}
-                      checked={params.sort === opt.value || (!params.sort && opt.value === 'newest')}
-                      onChange={() => {
-                        const url = new URL(window.location.href)
-                        url.searchParams.set('sort', opt.value)
-                        window.location.href = url.toString()
-                      }}
-                      className="text-primary focus:ring-primary"
-                    />
-                    <span className="text-sm">{opt.label}</span>
-                  </label>
-                ))}
+                {sortOptions.map(opt => {
+                  const isActive = currentSort === opt.value
+                  return (
+                    <Link
+                      key={opt.value}
+                      href={buildHref(params, { sort: opt.value })}
+                      className={`block px-3 py-2 rounded-lg transition-colors ${
+                        isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                      }`}
+                    >
+                      {opt.label}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
 
             <div className="bg-surface p-4 rounded-xl border border-border">
               <h3 className="font-semibold mb-3">Badges</h3>
               <div className="space-y-2">
-                {['NOUVEAU', 'PROMO', 'HOT'].map(badge => (
-                  <label key={badge} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={params.badge === badge}
-                      onChange={(e) => {
-                        const url = new URL(window.location.href)
-                        if (e.target.checked) {
-                          url.searchParams.set('badge', badge)
-                        } else {
-                          url.searchParams.delete('badge')
-                        }
-                        window.location.href = url.toString()
-                      }}
-                      className="text-primary focus:ring-primary rounded"
-                    />
-                    <span className="text-sm capitalize">{badge.toLowerCase()}</span>
-                  </label>
-                ))}
+                {badges.map(badge => {
+                  const isActive = currentBadge === badge
+                  return (
+                    <Link
+                      key={badge}
+                      href={buildHref(params, { badge: isActive ? undefined : badge })}
+                      className={`block px-3 py-2 rounded-lg transition-colors capitalize ${
+                        isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                      }`}
+                    >
+                      {badge.toLowerCase()}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </aside>
@@ -262,6 +269,6 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
           </section>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

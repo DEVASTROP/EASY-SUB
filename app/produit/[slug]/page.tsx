@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <Link
           href="/"
@@ -154,6 +154,6 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
