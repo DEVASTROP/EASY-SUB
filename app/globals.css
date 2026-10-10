@@ -3,26 +3,38 @@
 @tailwind utilities;
 
 :root {
-  /* Neutral dark placeholder theme */
-  --color-primary: 22 90% 50%;
-  --color-primary-foreground: 0 0% 100%;
-  --color-secondary: 0 0% 15%;
-  --color-secondary-foreground: 0 0% 95%;
-  --color-background: 0 0% 8%;
-  --color-foreground: 0 0% 95%;
-  --color-muted: 0 0% 12%;
-  --color-muted-foreground: 0 0% 60%;
-  --color-accent: 0 0% 15%;
-  --color-accent-foreground: 0 0% 95%;
-  --color-border: 0 0% 20%;
-  --color-input: 0 0% 15%;
-  --color-ring: 22 90% 50%;
+  /* G2A/G2G-inspired dark theme */
+  --color-primary: 43 92% 56%;        /* #F9A825 - Gold accent */
+  --color-primary-hover: 45 100% 50%;  /* #FFB300 - Gold hover */
+  --color-primary-foreground: 4 10% 6%;  /* Near-black for text on gold */
+
+  --color-secondary: 14 80% 35%;      /* #00BFA5 - Teal accent */
+  --color-secondary-foreground: 0 0% 100%;
+
+  --color-background: 224 30% 6%;     /* #0B0D12 - Near-black background */
+  --color-foreground: 216 33% 96%;    /* #F0F2F5 - Primary text */
+
+  --color-card: 224 22% 8%;           /* #10131A - Card surface */
+  --color-card-foreground: 216 33% 96%;
+
+  --color-muted: 224 22% 8%;          /* #10131A */
+  --color-muted-foreground: 216 12% 54%; /* #8A9199 - Muted text */
+
+  --color-accent: 224 22% 8%;         /* #10131A */
+  --color-accent-foreground: 216 33% 96%;
+
+  --color-border: 224 18% 12%;        /* #1E2330 - Subtle border */
+  --color-input: 224 22% 8%;
+  --color-ring: 43 92% 56%;
+
   --color-destructive: 0 84% 60%;
   --color-destructive-foreground: 0 0% 100%;
+
   --color-success: 142 76% 36%;
   --color-success-foreground: 0 0% 100%;
+
   --color-warning: 38 92% 50%;
-  --color-warning-foreground: 0 0% 100%;
+  --color-warning-foreground: 4 10% 6%;
 
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -36,4 +48,35 @@ body {
   background-color: hsl(var(--color-background));
   color: hsl(var(--color-foreground));
   font-family: var(--font-sans);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--color-background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--color-border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--color-muted-foreground));
+}
+
+/* Focus visible styles */
+:focus-visible {
+  outline: 2px solid hsl(var(--color-ring));
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: hsl(var(--color-primary) / 0.3);
+  color: hsl(var(--color-primary-foreground));
 }
