@@ -18,6 +18,9 @@ export interface Product {
   exchange_rate: number
   card_fees_percent: number
   sale_price_xof: number
+  original_price_xof: number | null
+  badge: 'NOUVEAU' | 'PROMO' | 'HOT' | null
+  region_label: string | null
   is_hidden: boolean
   in_stock: boolean
   is_featured: boolean
@@ -36,6 +39,9 @@ export interface PublicProduct {
   duration: string
   image_url: string | null
   sale_price_xof: number
+  original_price_xof: number | null
+  badge: 'NOUVEAU' | 'PROMO' | 'HOT' | null
+  region_label: string | null
   in_stock: boolean
   is_featured: boolean
   warranty_note: string | null

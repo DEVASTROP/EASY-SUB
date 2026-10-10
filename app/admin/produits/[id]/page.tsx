@@ -28,6 +28,9 @@ interface ProductFormData {
   exchange_rate: number
   card_fees_percent: number
   sale_price_xof: number
+  original_price_xof: number | null
+  badge: 'NOUVEAU' | 'PROMO' | 'HOT' | null
+  region_label: string | null
   is_hidden: boolean
   in_stock: boolean
   is_featured: boolean
@@ -46,6 +49,9 @@ const defaultFormData: ProductFormData = {
   exchange_rate: 600,
   card_fees_percent: 3.5,
   sale_price_xof: 0,
+  original_price_xof: null,
+  badge: null,
+  region_label: null,
   is_hidden: false,
   in_stock: true,
   is_featured: false,
@@ -118,6 +124,9 @@ export default function AdminProductPage() {
         exchange_rate: data.exchange_rate,
         card_fees_percent: data.card_fees_percent,
         sale_price_xof: data.sale_price_xof,
+        original_price_xof: data.original_price_xof,
+        badge: data.badge,
+        region_label: data.region_label,
         is_hidden: data.is_hidden,
         in_stock: data.in_stock,
         is_featured: data.is_featured,
@@ -334,6 +343,54 @@ export default function AdminProductPage() {
                 <div className="text-2xl font-bold text-success">
                   {margin.marginPercent.toFixed(1)}%
                 </div>
+              </div>
+            </div>
+
+            {formData.original_price_xof && formData.original_price_xof > formData.sale_price_xof && (
+              <div className="mt-4 p-4 bg-warning/10 border border-warning/30 rounded-lg">
+                <div className="text-sm text-warning-foreground">
+                  Réduction affichée : <strong>{Math.round((formData.original_price_xof - formData.sale_price_xof) / formData.original_price_xof * 100)}%</strong>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-semibold mb-4">Promotion et étiquettes</h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Prix de référence (FCFA)</label>
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={formData.original_price_xof || ''}
+                  onChange={e => handleChange('original_price_xof', e.target.value ? parseInt(e.target.value) : null)}
+                  className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Étiquette</label>
+                <select
+                  value={formData.badge || ''}
+                  onChange={e => handleChange('badge', (e.target.value as 'NOUVEAU' | 'PROMO' | 'HOT') || null)}
+                  className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="">Aucune</option>
+                  <option value="NOUVEAU">NOUVEAU</option>
+                  <option value="PROMO">PROMO</option>
+                  <option value="HOT">HOT</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Région</label>
+                <input
+                  type="text"
+                  value={formData.region_label || ''}
+                  onChange={e => handleChange('region_label', e.target.value || null)}
+                  placeholder="ex: GLOBAL, AFRIQUE"
+                  className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </div>
             </div>
           </div>
