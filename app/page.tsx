@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { PublicProduct, Category } from '@/types'
 import Link from 'next/link'
+import Image from 'next/image'
 import { buildWhatsAppLink } from '@/lib/whatsapp'
 
 async function getCategories(): Promise<Category[]> {
@@ -106,10 +107,12 @@ export default async function HomePage() {
               </div>
               {featuredProduct.image_url && (
                 <div className="w-full md:w-64 h-64 md:h-64">
-                  <img
+                  <Image
                     src={featuredProduct.image_url}
                     alt={featuredProduct.name}
-                    className="w-full h-full object-cover rounded-lg"
+                    fill
+                    className="object-cover rounded-lg"
+                    sizes="(max-width: 768px) 100vw, 256px"
                   />
                 </div>
               )}
@@ -133,11 +136,13 @@ export default async function HomePage() {
                       className="group border rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-background"
                     >
                       {product.image_url && (
-                        <div className="aspect-video overflow-hidden">
-                          <img
+                        <div className="aspect-video overflow-hidden relative">
+                          <Image
                             src={product.image_url}
                             alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
                         </div>
                       )}

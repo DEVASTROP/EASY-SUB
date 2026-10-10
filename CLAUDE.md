@@ -36,3 +36,12 @@ Small catalog website selling digital subscriptions (Gemini Pro, ChatGPT Plus, C
 /globals.css             # CSS variables for theming
 /tailwind.config.ts      # Theme mapping
 /.env.local.example      # Env template
+/public
+  /products/             # Product images (referenced as "/products/<file>.jpg")
+```
+
+## Image Conventions
+- Product images go in `/public/products/` (e.g., `/public/products/gemini-pro.jpg`)
+- In database/admin, reference them as `/products/<filename>.jpg`
+- Use `next/image` with `fill` + `sizes` prop for responsive images
+- Add `priority` for above-the-fold images (featured product, product detail page)

@@ -3,6 +3,7 @@ import { PublicProduct } from '@/types'
 import { notFound } from 'next/navigation'
 import { buildWhatsAppLink } from '@/lib/whatsapp'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Metadata } from 'next'
 
 interface Props {
@@ -75,11 +76,14 @@ export default async function ProductPage({ params }: Props) {
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             {product.image_url ? (
-              <div className="aspect-video rounded-xl overflow-hidden bg-muted">
-                <img
+              <div className="aspect-video rounded-xl overflow-hidden bg-muted relative">
+                <Image
                   src={product.image_url}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
                 />
               </div>
             ) : (
