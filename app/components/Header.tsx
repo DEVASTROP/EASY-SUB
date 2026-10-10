@@ -3,7 +3,7 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Search, MessageSquare } from 'lucide-react'
+import { Search, MessageSquare, Menu, X } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 
 interface Category {
@@ -19,6 +19,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,6 +51,10 @@ export function Header() {
     }
   }
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen)
+  }
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 bg-header text-header-foreground ${
@@ -79,13 +84,43 @@ export function Header() {
             <span className="hidden sm:block">EASY-SUB</span>
           </Link>
 
-          {/* Search form - desktop only */}
-          <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 flex-1 max-w-xl mx-8">
-            <label htmlFor="search" className="sr-only">Rechercher</label>
+          {/* WhatsApp button + mobile menu button */}
+          <div className="flex items-center gap-3">
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent('Bonjour, j\'ai une question.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-2 bg-whatsapp text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+              aria-label="Nous contacter sur WhatsApp"
+            >
+              <MessageSquare className="w-5 h-5" aria-hidden="true" />
+              <span>WhatsApp</span>
+            </a>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={toggleMobileMenu}
+              className="md:hidden p-2 rounded-lg hover:bg-accent text-header-foreground"
+              aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" aria-hidden="true" />
+              ) : (
+                <Menu className="w-6 h-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile search row - visible on mobile */}
+        <div className="md:hidden pb-4">
+          <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <label htmlFor="mobile-search" className="sr-only">Rechercher</label>
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
               <input
-                id="search"
+                id="mobile-search"
                 type="search"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
@@ -100,35 +135,11 @@ export function Header() {
               Rechercher
             </button>
           </form>
-
-          {/* WhatsApp button + mobile search trigger */}
-          <div className="flex items-center gap-3">
-            <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent('Bonjour, j\'ai une question.')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-2 bg-whatsapp text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
-              aria-label="Nous contacter sur WhatsApp"
-            >
-              <MessageSquare className="w-5 h-5" aria-hidden="true" />
-              <span>WhatsApp</span>
-            </a>
-
-            {/* Mobile menu button - placeholder for future */}
-            <button
-              className="md:hidden p-2 rounded-lg hover:bg-accent text-header-foreground"
-              aria-label="Menu"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Category nav bar */}
-      <div className="bg-header border-t border-white/10">
+      {/* Category nav bar - collapsible on mobile */}
+      <div className={`bg-header border-t border-white/10 ${mobileMenuOpen ? 'md:hidden' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <nav className="flex gap-2 overflow-x-auto scrollbar-hide pb-2" aria-label="Catégories" role="navigation">
             <Link
@@ -172,6 +183,28 @@ export function Header() {
           </nav>
         </div>
       </div>
+
+      {/* Desktop search form - hidden on mobile */}
+      <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 max-w-xl mx-auto px-4 md:px-6 py-4">
+        <label htmlFor="search" className="sr-only">Rechercher</label>
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
+          <input
+            id="search"
+            type="search"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Rechercher un abonnement, un jeu..."
+            className="w-full bg-surface border border-border rounded-lg px-10 py-2.5 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
+        >
+          Rechercher
+        </button>
+      </form>
     </header>
   )
 }
