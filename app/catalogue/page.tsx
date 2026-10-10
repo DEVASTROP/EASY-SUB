@@ -8,7 +8,7 @@ import { ProductRow } from '../components/ProductRow'
 interface SearchParams {
   q?: string
   category?: string
-  sort?: 'price-asc' | 'price-desc' | 'newest'
+  sort?: 'price-asc' | 'price-desc' | 'newest' | 'discount-desc'
   badge?: string
 }
 
@@ -28,7 +28,7 @@ async function getCategories(): Promise<Category[]> {
 
 async function getFilteredProducts(searchParams: SearchParams): Promise<PublicProduct[]> {
   const supabase = await createClient()
-  let query = supabase.from('public_products').select('*').eq('in_stock', true)
+  let query = supabase.from('public_products').select('*')
 
   if (searchParams.category) {
     const { data: cat } = await supabase
@@ -49,14 +49,17 @@ async function getFilteredProducts(searchParams: SearchParams): Promise<PublicPr
 
   switch (searchParams.sort) {
     case 'price-asc':
-      query = query.order('sale_price_xof', { ascending: true })
+      query = query.order('in_stock', { ascending: false }).order('sale_price_xof', { ascending: true })
       break
     case 'price-desc':
-      query = query.order('sale_price_xof', { ascending: false })
+      query = query.order('in_stock', { ascending: false }).order('sale_price_xof', { ascending: false })
+      break
+    case 'discount-desc':
+      query = query.order('in_stock', { ascending: false }).order('original_price_xof', { ascending: false, nullsFirst: false })
       break
     case 'newest':
     default:
-      query = query.order('created_at', { ascending: false })
+      query = query.order('in_stock', { ascending: false }).order('created_at', { ascending: false })
       break
   }
 
@@ -157,6 +160,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
                   { value: 'newest', label: 'Plus récents' },
                   { value: 'price-asc', label: 'Prix croissant' },
                   { value: 'price-desc', label: 'Prix décroissant' },
+                  { value: 'discount-desc', label: 'Plus grosses réductions' },
                 ].map(opt => (
                   <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
                     <input

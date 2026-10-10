@@ -36,6 +36,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
               {product.badge}
             </span>
           )}
+          {!product.in_stock && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <span className="text-white font-bold text-lg px-4 py-2 bg-destructive/90 rounded-lg">Indisponible</span>
+            </div>
+          )}
         </div>
       )}
       <div className="p-3">
@@ -49,9 +54,6 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </span>
           <span className="text-xs text-muted-foreground">{product.duration}</span>
         </div>
-        {!product.in_stock && (
-          <span className="mt-1 inline-block text-xs text-destructive">Indisponible</span>
-        )}
       </div>
     </Link>
   )
