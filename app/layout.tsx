@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import './globals.css'
 import { Header } from './components/Header'
 import { WhatsAppFloat } from './components/WhatsAppFloat'
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="min-h-screen">
-        <Header />
+        <Suspense fallback={null}>
+          <Header />
+        </Suspense>
         <main id="main-content" className="pt-32 md:pt-40">{children}</main>
         <WhatsAppFloat />
       </body>
