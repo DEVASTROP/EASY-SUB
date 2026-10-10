@@ -45,11 +45,6 @@ CREATE TRIGGER update_products_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_categories_updated_at
-  BEFORE UPDATE ON categories
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
-
 -- Public view - only public columns, only non-hidden products
 CREATE VIEW public_products AS
 SELECT
@@ -73,7 +68,6 @@ WHERE is_hidden = FALSE;
 -- RLS Policies
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER VIEW public_products SET (security_invoker = TRUE); -- Not needed for views but good practice
 
 -- Categories: public read access
 CREATE POLICY "Categories are publicly readable"

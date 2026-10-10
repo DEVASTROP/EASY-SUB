@@ -10,33 +10,33 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: 'var(--color-primary)',
-          foreground: 'var(--color-primary-foreground)',
+          DEFAULT: 'hsl(var(--color-primary) / <alpha-value>)',
+          foreground: 'hsl(var(--color-primary-foreground) / <alpha-value>)',
         },
         secondary: {
-          DEFAULT: 'var(--color-secondary)',
-          foreground: 'var(--color-secondary-foreground)',
+          DEFAULT: 'hsl(var(--color-secondary) / <alpha-value>)',
+          foreground: 'hsl(var(--color-secondary-foreground) / <alpha-value>)',
         },
-        background: 'var(--color-background)',
-        foreground: 'var(--color-foreground)',
+        background: 'hsl(var(--color-background) / <alpha-value>)',
+        foreground: 'hsl(var(--color-foreground) / <alpha-value>)',
         muted: {
-          DEFAULT: 'var(--color-muted)',
-          foreground: 'var(--color-muted-foreground)',
+          DEFAULT: 'hsl(var(--color-muted) / <alpha-value>)',
+          foreground: 'hsl(var(--color-muted-foreground) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: 'var(--color-accent)',
-          foreground: 'var(--color-accent-foreground)',
+          DEFAULT: 'hsl(var(--color-accent) / <alpha-value>)',
+          foreground: 'hsl(var(--color-accent-foreground) / <alpha-value>)',
         },
-        border: 'var(--color-border)',
-        input: 'var(--color-input)',
-        ring: 'var(--color-ring)',
+        border: 'hsl(var(--color-border) / <alpha-value>)',
+        input: 'hsl(var(--color-input) / <alpha-value>)',
+        ring: 'hsl(var(--color-ring) / <alpha-value>)',
         destructive: {
-          DEFAULT: 'var(--color-destructive)',
-          foreground: 'var(--color-destructive-foreground)',
+          DEFAULT: 'hsl(var(--color-destructive) / <alpha-value>)',
+          foreground: 'hsl(var(--color-destructive-foreground) / <alpha-value>)',
         },
         success: {
-          DEFAULT: 'var(--color-success)',
-          foreground: 'var(--color-success-foreground)',
+          DEFAULT: 'hsl(var(--color-success) / <alpha-value>)',
+          foreground: 'hsl(var(--color-success-foreground) / <alpha-value>)',
         },
       },
       fontFamily: {

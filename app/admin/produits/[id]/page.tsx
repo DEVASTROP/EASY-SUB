@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Category } from '@/types'
 import { computeMargin } from '@/lib/margin'
+import { LogoutButton } from '../../LogoutButton'
 
 interface ProductFormData {
   name: string
@@ -137,7 +138,7 @@ export default function AdminProductPage() {
     }
 
     if (result.error) {
-      setError(result.error.message)
+      setError('Erreur lors de l\'enregistrement, réessayez.')
       setSaving(false)
       return
     }
@@ -157,11 +158,14 @@ export default function AdminProductPage() {
   return (
     <main className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <a href="/admin" className="text-muted-foreground hover:text-foreground mb-4 inline-block">
-            ← Retour à la liste
-          </a>
-          <h1 className="text-3xl font-bold">{isNew ? 'Nouveau produit' : 'Modifier le produit'}</h1>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <a href="/admin" className="text-muted-foreground hover:text-foreground mb-4 inline-block">
+              ← Retour à la liste
+            </a>
+            <h1 className="text-3xl font-bold">{isNew ? 'Nouveau produit' : 'Modifier le produit'}</h1>
+          </div>
+          <LogoutButton />
         </div>
 
         {error && (

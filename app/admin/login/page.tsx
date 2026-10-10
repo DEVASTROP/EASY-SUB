@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
     })
 
     if (authError) {
-      setError(authError.message)
+      setError('E-mail ou mot de passe incorrect.')
       setLoading(false)
       return
     }
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
     <main className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">Vexel Admin</h1>
+          <h1 className="text-3xl font-bold">EASY-SUB Admin</h1>
           <p className="text-muted-foreground mt-2">Connexion administrateur</p>
         </div>
 

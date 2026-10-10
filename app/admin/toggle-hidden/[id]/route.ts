@@ -15,7 +15,7 @@ export async function POST(
   // Check if user is authenticated
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
+    return NextResponse.redirect(new URL('/admin/login', request.url), { status: 303 })
   }
 
   const { error } = await supabase
@@ -25,9 +25,9 @@ export async function POST(
 
   if (error) {
     console.error('Error toggling hidden:', error)
-    return NextResponse.redirect(new URL('/admin?error=toggle_failed', request.url))
+    return NextResponse.redirect(new URL('/admin?error=toggle_failed', request.url), { status: 303 })
   }
 
   revalidatePath('/admin')
-  return NextResponse.redirect(new URL('/admin', request.url))
+  return NextResponse.redirect(new URL('/admin', request.url), { status: 303 })
 }

@@ -3,6 +3,7 @@ import { Product } from '@/types'
 import { computeMargin } from '@/lib/margin'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
+import { LogoutButton } from './LogoutButton'
 
 async function getProducts(): Promise<Product[]> {
   const supabase = await createClient()
@@ -41,12 +42,15 @@ export default async function AdminPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Administration - Produits</h1>
-          <Link
-            href="/admin/produits/nouveau"
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
-          >
-            Nouveau produit
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin/produits/nouveau"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
+            >
+              Nouveau produit
+            </Link>
+            <LogoutButton />
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -62,6 +66,7 @@ export default async function AdminPage() {
                 <th className="pb-3 font-medium text-center">Stock</th>
                 <th className="pb-3 font-medium text-center">Vedette</th>
                 <th className="pb-3 font-medium text-center">Visible</th>
+                <th className="pb-3 font-medium text-center">Stock</th>
                 <th className="pb-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
@@ -132,6 +137,35 @@ export default async function AdminPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                               </svg>
                               Masquer
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    </td>
+                    <td className="py-4 text-center">
+                      <form action={`/admin/toggle-stock/${product.id}`} method="POST">
+                        <input type="hidden" name="in_stock" value={(!product.in_stock).toString()} />
+                        <button
+                          type="submit"
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                            product.in_stock
+                              ? 'bg-success/20 text-success hover:bg-success/30'
+                              : 'bg-destructive/20 text-destructive hover:bg-destructive/30'
+                          }`}
+                        >
+                          {product.in_stock ? (
+                            <>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Rupture
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              En stock
                             </>
                           )}
                         </button>

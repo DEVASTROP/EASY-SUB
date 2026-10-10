@@ -65,7 +65,7 @@ export default async function HomePage() {
     <main className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-12">
         <header className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Vexel</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">EASY-SUB</h1>
           <p className="text-muted-foreground text-lg">
             Abonnements numériques et crédits de jeu pour étudiants au Togo
           </p>

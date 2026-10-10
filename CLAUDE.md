@@ -1,4 +1,4 @@
-# Vexel - Digital Subscription Catalog for Togo Students
+# EASY-SUB - Digital Subscription Catalog for Togo Students
 
 ## Project Description
 Small catalog website selling digital subscriptions (Gemini Pro, ChatGPT Plus, Canva Pro, Netflix) and game credits to students in Togo. No online payment/cart. Each product has "Order on WhatsApp" button with pre-filled message. Owner handles payment (Mobile Money/bank deposit) and delivery manually on WhatsApp.
