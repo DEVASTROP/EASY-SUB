@@ -1,9 +1,9 @@
 'use client'
 
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Search, Menu, X } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { LogoIcon } from './LogoIcon'
 
@@ -15,19 +15,17 @@ interface Category {
 }
 
 export function Header() {
-  const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [scrolled, setScrolled] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   useEffect(() => {
@@ -45,31 +43,32 @@ export function Header() {
     loadCategories()
   }, [])
 
+  useEffect(() => {
+    const cat = searchParams.get('category')
+    if (cat) setSelectedCategory(cat)
+  }, [searchParams])
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      window.location.href = `/catalogue?q=${encodeURIComponent(searchQuery.trim())}`
-    }
-  }
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
+    const params = new URLSearchParams()
+    if (searchQuery.trim()) params.set('q', searchQuery.trim())
+    if (selectedCategory) params.set('category', selectedCategory)
+    const qs = params.toString()
+    window.location.href = qs ? `/catalogue?${qs}` : '/catalogue'
   }
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 bg-header text-header-foreground ${
-        scrolled ? 'shadow-lg' : ''
-      }`}
+      className="sticky top-0 z-50 bg-header text-header-foreground shadow-lg"
       role="banner"
     >
-      {/* Top bar: logo, search, WhatsApp */}
       <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-16">
+        {/* Row 1: Logo + WhatsApp (mobile) or Logo + Search + WhatsApp (desktop) */}
+        <div className="flex items-center justify-between h-16 md:h-16 gap-4">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 text-xl font-bold text-primary hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 text-xl font-bold text-primary hover:opacity-80 transition-opacity flex-shrink-0"
             aria-label="EASY-SUB - Accueil"
           >
             <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -85,127 +84,98 @@ export function Header() {
             <span className="hidden sm:block">EASY-SUB</span>
           </Link>
 
-          {/* WhatsApp button + mobile menu button */}
-          <div className="flex items-center gap-3">
+          {/* Search bar - middle on desktop, full width row 2 on mobile */}
+          <div className={`flex-1 max-w-2xl md:max-w-3xl ${isMobile ? 'hidden' : ''}`}>
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative flex items-center bg-white rounded-full h-11 px-3 shadow-sm">
+                <label htmlFor="search" className="sr-only">Rechercher</label>
+                <Search className="w-5 h-5 text-muted-foreground ml-2 flex-shrink-0" aria-hidden="true" />
+                <input
+                  id="search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Que cherchez-vous ?"
+                  className="flex-1 bg-transparent border-none outline-none text-foreground placeholder-muted-foreground py-2 px-3 text-sm md:text-base min-w-0"
+                />
+                {/* Category select divider */}
+                <div className="w-px h-6 bg-border mx-2 flex-shrink-0" aria-hidden="true" />
+                <select
+                  value={selectedCategory}
+                  onChange={e => setSelectedCategory(e.target.value)}
+                  className="bg-transparent border-none outline-none text-foreground text-sm md:text-base py-2 pr-8 pe-2 cursor-pointer flex-shrink-0 appearance-none"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
+                >
+                  <option value="">Toutes catégories</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity ml-2"
+                  aria-label="Rechercher"
+                >
+                  <Search className="w-5 h-5 text-white" aria-hidden="true" />
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* WhatsApp button */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             <a
               href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent('Bonjour, j\'ai une question.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-2 bg-whatsapp text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+              className={`bg-whatsapp text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2 ${isMobile ? 'p-2' : 'px-4 py-2'}`}
               aria-label="Nous contacter sur WhatsApp"
             >
-              <LogoIcon name="whatsapp" tone="mono" size={20} />
-              <span>WhatsApp</span>
+              <LogoIcon name="whatsapp" tone="mono" size={isMobile ? 24 : 20} />
+              <span className="hidden sm:inline">WhatsApp</span>
             </a>
-
-            {/* Mobile menu button */}
-            <button
-              onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg hover:bg-accent text-header-foreground"
-              aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" aria-hidden="true" />
-              ) : (
-                <Menu className="w-6 h-6" aria-hidden="true" />
-              )}
-            </button>
           </div>
         </div>
 
-        {/* Mobile search row - visible on mobile */}
-        <div className="md:hidden pb-4">
-          <form onSubmit={handleSearch} className="flex items-center gap-2">
-            <label htmlFor="mobile-search" className="sr-only">Rechercher</label>
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
-              <input
-                id="mobile-search"
-                type="search"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un abonnement, un jeu..."
-                className="w-full bg-surface border border-border rounded-lg px-10 py-2.5 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
-            >
-              Rechercher
-            </button>
-          </form>
-        </div>
+        {/* Row 2: Search bar on mobile only */}
+        {isMobile && (
+          <div className="pb-4">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative flex items-center bg-white rounded-full h-11 px-3 shadow-sm">
+                <label htmlFor="mobile-search" className="sr-only">Rechercher</label>
+                <Search className="w-5 h-5 text-muted-foreground ml-2 flex-shrink-0" aria-hidden="true" />
+                <input
+                  id="mobile-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Que cherchez-vous ?"
+                  className="flex-1 bg-transparent border-none outline-none text-foreground placeholder-muted-foreground py-2 px-3 text-sm min-w-0"
+                />
+                <div className="w-px h-6 bg-border mx-2 flex-shrink-0" aria-hidden="true" />
+                <select
+                  value={selectedCategory}
+                  onChange={e => setSelectedCategory(e.target.value)}
+                  className="bg-transparent border-none outline-none text-foreground text-sm py-2 pr-8 pe-2 cursor-pointer flex-shrink-0 appearance-none"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
+                >
+                  <option value="">Toutes catégories</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity ml-2"
+                  aria-label="Rechercher"
+                >
+                  <Search className="w-5 h-5 text-white" aria-hidden="true" />
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
-
-      {/* Category nav bar - collapsible on mobile */}
-      <div className="bg-header border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <nav className={`flex gap-2 overflow-x-auto scrollbar-hide pb-2 ${mobileMenuOpen ? '' : 'md:hidden hidden'} `} aria-label="Catégories" role="navigation">
-            <Link
-              href="/catalogue"
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                pathname === '/catalogue' && !searchParams.get('category')
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-header-foreground/70 hover:bg-white/10'
-              }`}
-            >
-              Toutes les offres
-            </Link>
-            {categories.map(category => (
-              <Link
-                key={category.id}
-                href={`/catalogue?category=${category.slug}`}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                  searchParams.get('category') === category.slug
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-header-foreground/70 hover:bg-white/10'
-                }`}
-              >
-                {category.slug === 'ia-et-outils' && (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                )}
-                {category.slug === 'divertissement' && (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                )}
-                {category.slug === 'jeux' && (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
-                )}
-                {category.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      {/* Desktop search form - hidden on mobile */}
-      <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 max-w-xl mx-auto px-4 md:px-6 py-4">
-        <label htmlFor="search" className="sr-only">Rechercher</label>
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
-          <input
-            id="search"
-            type="search"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un abonnement, un jeu..."
-            className="w-full bg-surface border border-border rounded-lg px-10 py-2.5 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
-        >
-          Rechercher
-        </button>
-      </form>
     </header>
   )
 }
