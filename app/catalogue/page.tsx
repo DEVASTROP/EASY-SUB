@@ -12,6 +12,13 @@ interface SearchParams {
   badge?: string
 }
 
+function calculateDiscountPercent(product: PublicProduct): number {
+  if (product.original_price_xof && product.original_price_xof > product.sale_price_xof) {
+    return Math.round(((product.original_price_xof - product.sale_price_xof) / product.original_price_xof) * 100)
+  }
+  return 0
+}
+
 async function getCategories(): Promise<Category[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -47,21 +54,8 @@ async function getFilteredProducts(searchParams: SearchParams): Promise<PublicPr
     query = query.eq('badge', searchParams.badge)
   }
 
-  switch (searchParams.sort) {
-    case 'price-asc':
-      query = query.order('in_stock', { ascending: false }).order('sale_price_xof', { ascending: true })
-      break
-    case 'price-desc':
-      query = query.order('in_stock', { ascending: false }).order('sale_price_xof', { ascending: false })
-      break
-    case 'discount-desc':
-      query = query.order('in_stock', { ascending: false }).order('original_price_xof', { ascending: false, nullsFirst: false })
-      break
-    case 'newest':
-    default:
-      query = query.order('in_stock', { ascending: false }).order('created_at', { ascending: false })
-      break
-  }
+  // Default ordering: in-stock first, then by created_at desc
+  query = query.order('in_stock', { ascending: false }).order('created_at', { ascending: false })
 
   const { data, error } = await query
 
@@ -69,7 +63,40 @@ async function getFilteredProducts(searchParams: SearchParams): Promise<PublicPr
     console.error('Error fetching products:', error)
     return []
   }
-  return data || []
+
+  let products = data || []
+
+  // Apply sort in JavaScript for discount-desc
+  if (searchParams.sort === 'discount-desc') {
+    products = products.sort((a, b) => {
+      // In-stock products first
+      if (a.in_stock !== b.in_stock) {
+        return a.in_stock ? -1 : 1
+      }
+      // Then by discount percent descending
+      const discountA = calculateDiscountPercent(a)
+      const discountB = calculateDiscountPercent(b)
+      return discountB - discountA
+    })
+  } else if (searchParams.sort === 'price-asc') {
+    products = products.sort((a, b) => {
+      if (a.in_stock !== b.in_stock) return a.in_stock ? -1 : 1
+      return a.sale_price_xof - b.sale_price_xof
+    })
+  } else if (searchParams.sort === 'price-desc') {
+    products = products.sort((a, b) => {
+      if (a.in_stock !== b.in_stock) return a.in_stock ? -1 : 1
+      return b.sale_price_xof - a.sale_price_xof
+    })
+  } else {
+    // newest - already sorted by created_at desc from DB
+    products = products.sort((a, b) => {
+      if (a.in_stock !== b.in_stock) return a.in_stock ? -1 : 1
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+  }
+
+  return products
 }
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<SearchParams> }): Promise<Metadata> {

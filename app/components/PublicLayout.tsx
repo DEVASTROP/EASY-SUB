@@ -17,7 +17,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Header />
-      <main id="main-content" className="min-h-screen pt-32 md:pt-40">{children}</main>
+      <main id="main-content" className="min-h-screen pt-48 md:pt-56">{children}</main>
       <WhatsAppFloat />
       <Footer />
     </>
