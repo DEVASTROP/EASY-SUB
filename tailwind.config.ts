@@ -19,6 +19,17 @@ const config: Config = {
         },
         background: 'hsl(var(--color-background) / <alpha-value>)',
         foreground: 'hsl(var(--color-foreground) / <alpha-value>)',
+        surface: 'hsl(var(--color-surface) / <alpha-value>)',
+        hero: {
+          DEFAULT: 'hsl(var(--color-hero) / <alpha-value>)',
+          foreground: 'hsl(var(--color-hero-foreground) / <alpha-value>)',
+        },
+        discount: 'hsl(var(--color-discount) / <alpha-value>)',
+        whatsapp: 'hsl(var(--color-whatsapp) / <alpha-value>)',
+        header: {
+          DEFAULT: 'hsl(var(--color-header) / <alpha-value>)',
+          foreground: 'hsl(var(--color-header-foreground) / <alpha-value>)',
+        },
         muted: {
           DEFAULT: 'hsl(var(--color-muted) / <alpha-value>)',
           foreground: 'hsl(var(--color-muted-foreground) / <alpha-value>)',
