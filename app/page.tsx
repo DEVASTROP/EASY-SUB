@@ -52,11 +52,29 @@ async function getPromoProducts(): Promise<PublicProduct[]> {
   return data || []
 }
 
+async function getFeaturedProducts(): Promise<PublicProduct[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('public_products')
+    .select('*')
+    .eq('is_featured', true)
+    .eq('in_stock', true)
+    .order('created_at', { ascending: false })
+    .limit(4)
+
+  if (error) {
+    console.error('Error fetching featured products:', error)
+    return []
+  }
+  return data || []
+}
+
 export default async function HomePage() {
-  const [categories, products, promoProducts] = await Promise.all([
+  const [categories, products, promoProducts, featuredProducts] = await Promise.all([
     getCategories(),
     getPublicProducts(),
     getPromoProducts(),
+    getFeaturedProducts(),
   ])
 
   const productsByCategory = categories.map(category => ({
@@ -66,9 +84,9 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <HeroSection />
+      <HeroSection featuredProducts={featuredProducts} />
       {promoProducts.length > 0 && <PromoStrip promoProducts={promoProducts} />}
-      {categories.length > 0 && <CategoryTiles categories={categories} products={products} />}
+      {categories.length > 0 && <CategoryTiles categories={categories} />}
       {productsByCategory.length > 0 && (
         <section className="py-16 md:py-24 bg-card" aria-labelledby="products-title">
           <div className="max-w-7xl mx-auto px-4 md:px-6">

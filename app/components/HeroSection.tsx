@@ -1,115 +1,156 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
+import { PublicProduct } from '@/types'
+import { ProductImagePlaceholder } from './ProductImagePlaceholder'
 
-export function HeroSection() {
+interface HeroSectionProps {
+  featuredProducts: PublicProduct[]
+}
+
+function calculateDiscountPercent(product: PublicProduct): number {
+  if (product.original_price_xof && product.original_price_xof > product.sale_price_xof) {
+    return Math.round(((product.original_price_xof - product.sale_price_xof) / product.original_price_xof) * 100)
+  }
+  return 0
+}
+
+function getBrandFromProduct(product: PublicProduct): string | null {
+  const name = product.name.toLowerCase()
+  if (name.includes('gemini')) return 'gemini'
+  if (name.includes('chatgpt') || name.includes('openai') || name.includes('gpt')) return 'chatgpt'
+  if (name.includes('netflix')) return 'netflix'
+  if (name.includes('canva')) return 'canva'
+  if (name.includes('spotify')) return 'spotify'
+  if (name.includes('youtube')) return 'youtube'
+  if (name.includes('disney')) return 'disney'
+  if (name.includes('apple')) return 'apple'
+  if (name.includes('steam')) return 'steam'
+  if (name.includes('playstation') || name.includes('psn') || name.includes('ps5') || name.includes('ps4')) return 'playstation'
+  if (name.includes('xbox') || name.includes('game pass')) return 'xbox'
+  if (name.includes('nintendo') || name.includes('switch') || name.includes('eshop')) return 'nintendo'
+  if (name.includes('google play') || name.includes('play store')) return 'google-play'
+  return null
+}
+
+export function HeroSection({ featuredProducts }: HeroSectionProps) {
+  const displayProducts = featuredProducts.slice(0, 4)
+
+  if (displayProducts.length === 0) return null
+
   return (
     <section className="relative overflow-hidden bg-hero text-hero-foreground" aria-labelledby="hero-title">
       <div className="absolute inset-0 bg-gradient-to-b from-hero via-hero to-background" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-20 md:py-32">
-        <div className="text-center max-w-3xl mx-auto">
-          <h1
-            id="hero-title"
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
-          >
-            Abonnements numériques{' '}
-            <span className="text-primary">& crédits de jeu</span>
+      <div className="absolute inset-0 bg-[conic-gradient(from_180deg_at_50%_50%,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-primary/5 opacity-50" />
+      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
+        <div className="mb-8 md:mb-12">
+          <h1 id="hero-title" className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-center">
+            Abonnements numériques <span className="text-primary">& crédits de jeu</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Tes abonnements préférés — Gemini Pro, ChatGPT Plus, Canva Pro, Netflix —
-            et tes crédits de jeu, livrés sur WhatsApp en quelques minutes.
-            Paiement Mobile Money ou dépôt bancaire.
+          <p className="mt-4 text-base md:text-lg text-muted-foreground text-center max-w-2xl mx-auto">
+            Tes abonnements préférés livrés sur WhatsApp en quelques minutes. Paiement Mobile Money ou dépôt bancaire.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Link
-              href="/catalogue"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
-            >
-              Voir le catalogue
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+        </div>
+
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:flex-wrap md:justify-center">
+          {displayProducts.map((product) => {
+            const discount = calculateDiscountPercent(product)
+            const brand = getBrandFromProduct(product)
+            return (
+              <Link
+                key={product.id}
+                href={`/produit/${product.slug}`}
+                className="flex-shrink-0 snap-center w-[280px] md:w-[300px] group bg-background border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all duration-300"
+                aria-label={`Voir ${product.name}`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </Link>
-            <a
-              href="#contact"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-border text-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:bg-accent transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403c-.454-1.805-.777-3.242-.53-3.742.416-.837 1.043-1.642 2.122-2.406.093-.063.155-.14.259-.216.224-.163.613-.159 1.09.036.242.1 1.277 1.194 1.172 1.351-.087.134-1.595 1.988-3.613 2.473-1.937.464-2.492.337-2.492.337" />
-              </svg>
-              Commander sur WhatsApp
-            </a>
-          </div>
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-success"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Livraison rapide
-            </span>
-            <span className="flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-success"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Paiement Mobile Money
-            </span>
-            <span className="flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-success"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Support 7j/7
-            </span>
-          </div>
+                <div className="aspect-square relative overflow-hidden">
+                  {product.image_url ? (
+                    <Image
+                      src={product.image_url}
+                      alt=""
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="280px"
+                    />
+                  ) : (
+                    <ProductImagePlaceholder productName={product.name} />
+                  )}
+
+                  <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+                    {brand && (
+                      <span className="px-2 py-1 text-xs font-bold rounded-full bg-background/90 backdrop-blur-sm text-foreground flex items-center gap-1">
+                        <span className="w-4 h-4" style={{
+                          maskImage: `url(/logos/${brand}.svg)`,
+                          maskSize: 'contain',
+                          maskRepeat: 'no-repeat',
+                          maskPosition: 'center',
+                          WebkitMaskImage: `url(/logos/${brand}.svg)`,
+                          WebkitMaskSize: 'contain',
+                          WebkitMaskRepeat: 'no-repeat',
+                          WebkitMaskPosition: 'center',
+                          backgroundColor: 'currentColor',
+                        }} />
+                        {brand.charAt(0).toUpperCase() + brand.slice(1).replace('-', ' ')}
+                      </span>
+                    )}
+                    {discount > 0 && (
+                      <span className="bg-destructive text-destructive-foreground px-2.5 py-1 text-xs font-bold rounded-full">
+                        -{discount}%
+                      </span>
+                    )}
+                  </div>
+
+                  {!product.in_stock && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg px-4 py-2 bg-destructive/90 rounded-lg">Indisponible</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4 space-y-2">
+                  <h3 className="font-semibold text-base line-clamp-1 group-hover:text-primary transition-colors">
+                    {product.name}
+                  </h3>
+
+                  {product.region_label && (
+                    <p className="text-xs text-muted-foreground">{product.region_label}</p>
+                  )}
+
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl font-bold text-primary">
+                      {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
+                    </span>
+                    {product.original_price_xof && product.original_price_xof > product.sale_price_xof && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        {new Intl.NumberFormat('fr-FR').format(product.original_price_xof)} FCFA
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+                    Voir
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            href="/catalogue"
+            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+          >
+            Voir tout le catalogue
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>

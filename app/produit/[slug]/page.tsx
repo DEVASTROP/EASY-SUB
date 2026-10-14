@@ -76,7 +76,7 @@ export default async function ProductPage({ params }: Props) {
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             {product.image_url ? (
-              <div className="aspect-video rounded-xl overflow-hidden bg-muted relative">
+              <div className="aspect-square rounded-xl overflow-hidden bg-muted relative">
                 <Image
                   src={product.image_url}
                   alt={product.name}
@@ -87,7 +87,7 @@ export default async function ProductPage({ params }: Props) {
                 />
               </div>
             ) : (
-              <div className="aspect-video rounded-xl bg-muted flex items-center justify-center">
+              <div className="aspect-square rounded-xl bg-muted flex items-center justify-center">
                 <span className="text-muted-foreground">Pas d'image</span>
               </div>
             )}

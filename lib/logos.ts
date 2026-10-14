@@ -102,6 +102,36 @@ export const LOGOS: BrandLogoConfig[] = [
     isMulticolor: false,
     keywords: ['supabase'],
   },
+  {
+    name: 'steam',
+    color: '#1B2838',
+    isMulticolor: false,
+    keywords: ['steam', 'valve'],
+  },
+  {
+    name: 'playstation',
+    color: '#003791',
+    isMulticolor: false,
+    keywords: ['playstation', 'psn', 'ps5', 'ps4'],
+  },
+  {
+    name: 'xbox',
+    color: '#107C10',
+    isMulticolor: false,
+    keywords: ['xbox', 'game pass', 'microsoft'],
+  },
+  {
+    name: 'nintendo',
+    color: '#E60012',
+    isMulticolor: false,
+    keywords: ['nintendo', 'switch', 'eshop'],
+  },
+  {
+    name: 'google-play',
+    color: '#4285F4',
+    isMulticolor: true,
+    keywords: ['google play', 'play store', 'google-play'],
+  },
 ]
 
 export function brandLogoFor(productName: string): BrandLogoConfig | null {

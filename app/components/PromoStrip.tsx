@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { PublicProduct } from '@/types'
+import { ProductImagePlaceholder } from './ProductImagePlaceholder'
 
 interface PromoStripProps {
   promoProducts: PublicProduct[]
@@ -12,6 +13,13 @@ const badgeStyles: Record<string, string> = {
   HOT: 'bg-warning/20 text-warning border-warning/30',
 }
 
+function calculateDiscountPercent(product: PublicProduct): number {
+  if (product.original_price_xof && product.original_price_xof > product.sale_price_xof) {
+    return Math.round(((product.original_price_xof - product.sale_price_xof) / product.original_price_xof) * 100)
+  }
+  return 0
+}
+
 export function PromoStrip({ promoProducts }: PromoStripProps) {
   if (promoProducts.length === 0) return null
 
@@ -20,41 +28,66 @@ export function PromoStrip({ promoProducts }: PromoStripProps) {
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <h2 id="promo-title" className="sr-only">Offres du moment</h2>
         <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:flex-wrap">
-          {promoProducts.map(product => (
-            <Link
-              key={product.id}
-              href={`/produit/${product.slug}`}
-              className="flex-shrink-0 w-56 md:w-64 group bg-background border border-border rounded-xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all duration-300"
-            >
-              {product.image_url && (
+          {promoProducts.map(product => {
+            const discount = calculateDiscountPercent(product)
+            return (
+              <Link
+                key={product.id}
+                href={`/produit/${product.slug}`}
+                className="flex-shrink-0 w-56 md:w-64 group bg-background border border-border rounded-xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all duration-300"
+              >
                 <div className="aspect-square relative overflow-hidden">
-                  <Image
-                    src={product.image_url}
-                    alt=""
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    sizes="224px"
-                  />
-                  {product.badge && (
-                    <span className={`absolute top-2 left-2 px-2 py-1 text-xs font-bold rounded ${badgeStyles[product.badge] || 'bg-muted text-muted-foreground'}`}>
-                      {product.badge}
-                    </span>
+                  {product.image_url ? (
+                    <Image
+                      src={product.image_url}
+                      alt=""
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="224px"
+                    />
+                  ) : (
+                    <ProductImagePlaceholder productName={product.name} />
+                  )}
+                  <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                    {product.badge && (
+                      <span className={`px-2 py-1 text-xs font-bold rounded ${badgeStyles[product.badge] || 'bg-muted text-muted-foreground'}`}>
+                        {product.badge}
+                      </span>
+                    )}
+                    {discount > 0 && (
+                      <span className="bg-destructive text-destructive-foreground px-2 py-1 text-xs font-bold rounded">
+                        -{discount}%
+                      </span>
+                    )}
+                  </div>
+                  {!product.in_stock && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg px-4 py-2 bg-destructive/90 rounded-lg">Indisponible</span>
+                    </div>
                   )}
                 </div>
-              )}
-              <div className="p-3">
-                <h3 className="font-medium text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">
-                  {product.name}
-                </h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-primary">
-                    {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
-                  </span>
+                <div className="p-3">
+                  <h3 className="font-medium text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                    {product.name}
+                  </h3>
+                  {product.region_label && (
+                    <p className="text-xs text-muted-foreground mb-1.5">{product.region_label}</p>
+                  )}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-base font-bold text-primary">
+                      {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
+                    </span>
+                    {product.original_price_xof && product.original_price_xof > product.sale_price_xof && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        {new Intl.NumberFormat('fr-FR').format(product.original_price_xof)} FCFA
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs text-muted-foreground">{product.duration}</span>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>
