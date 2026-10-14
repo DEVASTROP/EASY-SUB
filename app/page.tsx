@@ -84,9 +84,9 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <HeroSection featuredProducts={featuredProducts} />
-      {promoProducts.length > 0 && <PromoStrip promoProducts={promoProducts} />}
-      {categories.length > 0 && <CategoryTiles categories={categories} />}
+      <HeroSection featuredProducts={featuredProducts} categories={categories} />
+      {promoProducts.length > 0 && <PromoStrip promoProducts={promoProducts} categories={categories} />}
+      {categories.length > 0 && <CategoryTiles />}
       {productsByCategory.length > 0 && (
         <section className="py-16 md:py-24 bg-card" aria-labelledby="products-title">
           <div className="max-w-7xl mx-auto px-4 md:px-6">

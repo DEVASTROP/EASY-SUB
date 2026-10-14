@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { PublicProduct } from '@/types'
+import { PublicProduct, Category } from '@/types'
 import { ProductImagePlaceholder } from './ProductImagePlaceholder'
 import { brandLogoFor } from '@/lib/logos'
 
@@ -27,7 +27,17 @@ function getBadgeLabel(badge?: string): string | null {
   return labels[badge] || null
 }
 
-export function HeroSection({ featuredProducts }: { featuredProducts: PublicProduct[] }) {
+function getCategoryName(categories: Category[], categoryId: string): string {
+  const cat = categories.find(c => c.id === categoryId)
+  return cat?.name || 'Catégorie'
+}
+
+interface HeroSectionProps {
+  featuredProducts: PublicProduct[]
+  categories: Category[]
+}
+
+export function HeroSection({ featuredProducts, categories }: HeroSectionProps) {
   const displayProducts = featuredProducts.slice(0, 4)
 
   if (displayProducts.length === 0) return null
@@ -58,17 +68,18 @@ export function HeroSection({ featuredProducts }: { featuredProducts: PublicProd
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="flex flex-nowrap justify-center gap-6 overflow-x-auto scrollbar-hide snap-x pb-4 md:overflow-visible md:pb-0 md:flex-nowrap">
           {displayProducts.map((product, index) => {
             const discount = calculateDiscountPercent(product)
             const badge = getBadgeLabel(product.badge ?? undefined)
             const logo = brandLogoFor(product.name)
+            const categoryName = getCategoryName(categories, product.category_id)
 
             return (
               <Link
                 key={product.id}
                 href={`/produit/${product.slug}`}
-                className="group block bg-surface/95 backdrop-blur-sm rounded-2xl overflow-hidden border border-border/50 hover:border-primary/50 hover:shadow-xl transition-all duration-300"
+                className="group block bg-surface/95 backdrop-blur-sm rounded-2xl overflow-hidden border border-border/50 hover:border-primary/50 hover:shadow-xl transition-all duration-300 w-[290px] flex-shrink-0 snap-center md:w-[290px]"
               >
                 <div className="aspect-[3/4] relative overflow-hidden bg-muted">
                   {product.image_url ? (
@@ -78,7 +89,7 @@ export function HeroSection({ featuredProducts }: { featuredProducts: PublicProd
                       fill
                       priority={index === 0}
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 640px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 78vw, 290px"
                     />
                   ) : logo ? (
                     <div className="absolute inset-0 flex items-center justify-center p-8">
@@ -111,12 +122,16 @@ export function HeroSection({ featuredProducts }: { featuredProducts: PublicProd
                   <h3 className="text-lg md:text-xl font-bold uppercase leading-tight group-hover:text-primary transition-colors">
                     {product.name}
                   </h3>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <span>Catégorie</span>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
+                    <span>{categoryName}</span>
                     <span>·</span>
                     <span>{product.duration}</span>
-                    <span>·</span>
-                    <span>{product.region_label || 'REGION'}</span>
+                    {product.region_label && (
+                      <>
+                        <span>·</span>
+                        <span>{product.region_label}</span>
+                      </>
+                    )}
                   </p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-bold text-foreground">

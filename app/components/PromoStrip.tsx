@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { PublicProduct } from '@/types'
+import { PublicProduct, Category } from '@/types'
 import { ProductImagePlaceholder } from './ProductImagePlaceholder'
 
 interface PromoStripProps {
   promoProducts: PublicProduct[]
+  categories: Category[]
 }
 
 const badgeStyles: Record<string, string> = {
@@ -20,7 +21,12 @@ function calculateDiscountPercent(product: PublicProduct): number {
   return 0
 }
 
-export function PromoStrip({ promoProducts }: PromoStripProps) {
+function getCategoryName(categories: Category[], categoryId: string): string {
+  const cat = categories.find(c => c.id === categoryId)
+  return cat?.name || 'Catégorie'
+}
+
+export function PromoStrip({ promoProducts, categories }: PromoStripProps) {
   if (promoProducts.length === 0) return null
 
   return (
@@ -30,6 +36,7 @@ export function PromoStrip({ promoProducts }: PromoStripProps) {
         <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:flex-wrap">
           {promoProducts.map(product => {
             const discount = calculateDiscountPercent(product)
+            const categoryName = getCategoryName(categories, product.category_id)
             return (
               <Link
                 key={product.id}
@@ -70,9 +77,17 @@ export function PromoStrip({ promoProducts }: PromoStripProps) {
                   <h3 className="font-medium text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">
                     {product.name}
                   </h3>
-                  {product.region_label && (
-                    <p className="text-xs text-muted-foreground mb-1.5">{product.region_label}</p>
-                  )}
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap mb-1.5">
+                    <span>{categoryName}</span>
+                    <span>·</span>
+                    <span>{product.duration}</span>
+                    {product.region_label && (
+                      <>
+                        <span>·</span>
+                        <span>{product.region_label}</span>
+                      </>
+                    )}
+                  </p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-base font-bold text-primary">
                       {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
@@ -83,7 +98,6 @@ export function PromoStrip({ promoProducts }: PromoStripProps) {
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground">{product.duration}</span>
                 </div>
               </Link>
             )

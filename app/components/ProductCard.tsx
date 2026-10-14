@@ -8,6 +8,7 @@ import { ProductImagePlaceholder } from './ProductImagePlaceholder'
 interface ProductCardProps {
   product: PublicProduct
   priority?: boolean
+  categoryName?: string
 }
 
 const badgeStyles: Record<string, string> = {
@@ -23,7 +24,7 @@ function calculateDiscountPercent(product: PublicProduct): number {
   return 0
 }
 
-export function ProductCard({ product, priority = false }: ProductCardProps) {
+export function ProductCard({ product, priority = false, categoryName }: ProductCardProps) {
   const discount = calculateDiscountPercent(product)
 
   return (
@@ -66,9 +67,17 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         <h3 className="font-medium text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">
           {product.name}
         </h3>
-        {product.region_label && (
-          <p className="text-xs text-muted-foreground mb-1.5">{product.region_label}</p>
-        )}
+        <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap mb-1.5">
+          {categoryName && <span>{categoryName}</span>}
+          {categoryName && <span>·</span>}
+          <span>{product.duration}</span>
+          {product.region_label && (
+            <>
+              <span>·</span>
+              <span>{product.region_label}</span>
+            </>
+          )}
+        </p>
         <div className="flex items-baseline gap-2">
           <span className="text-base font-bold text-primary">
             {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
@@ -79,7 +88,6 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             </span>
           )}
         </div>
-        <span className="text-xs text-muted-foreground">{product.duration}</span>
       </div>
     </Link>
   )

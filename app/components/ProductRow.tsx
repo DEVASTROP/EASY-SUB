@@ -29,7 +29,7 @@ export function ProductRow({ category, products }: ProductRowProps) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {visibleProducts.map((product, index) => (
-          <ProductCard key={product.id} product={product} priority={index === 0} />
+          <ProductCard key={product.id} product={product} priority={index === 0} categoryName={category.name} />
         ))}
       </div>
     </div>

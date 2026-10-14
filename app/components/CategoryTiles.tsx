@@ -1,50 +1,160 @@
 'use client'
 
 import Link from 'next/link'
+import { useRef, useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { categoryTilesConfig } from './categoryTiles.config'
 import { LogoIcon } from './LogoIcon'
-import { Category } from '@/types'
+import { brandLogoFor } from '@/lib/logos'
+import { cn } from '@/lib/utils'
 
-interface CategoryTilesProps {
-  categories: Category[]
-}
+export function CategoryTiles() {
+  const [enabledTiles] = useState(() => categoryTilesConfig.filter(t => t.enabled))
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [showLeftArrow, setShowLeftArrow] = useState(false)
+  const [showRightArrow, setShowRightArrow] = useState(false)
 
-export function CategoryTiles({ categories }: CategoryTilesProps) {
-  if (categories.length === 0) return null
+  const checkScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    setShowLeftArrow(el.scrollLeft > 10)
+    setShowRightArrow(el.scrollLeft + el.clientWidth < el.scrollWidth - 10)
+  }
 
-  // Map DB categories to config order, only include those in config
-  const categoryMap = new Map(categories.map(c => [c.slug, c]))
-  const sortedConfig = [...categoryTilesConfig].sort((a, b) => a.sort_order - b.sort_order)
-  const displayCategories = sortedConfig
-    .map(config => ({ config, db: categoryMap.get(config.slug) }))
-    .filter(({ db }) => db !== undefined)
-    .map(({ config, db }) => ({ config, db: db! }))
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
 
-  if (displayCategories.length === 0) return null
+    checkScroll()
+    const ro = new ResizeObserver(checkScroll)
+    ro.observe(el)
+    el.addEventListener('scroll', checkScroll, { passive: true })
+    return () => {
+      ro.disconnect()
+      el.removeEventListener('scroll', checkScroll)
+    }
+  }, [])
+
+  const scrollLeft = () => {
+    const el = scrollRef.current
+    if (el) {
+      el.scrollBy({ left: -el.clientWidth * 0.8, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    const el = scrollRef.current
+    if (el) {
+      el.scrollBy({ left: el.clientWidth * 0.8, behavior: 'smooth' })
+    }
+  }
 
   return (
-    <section className="bg-background border-y border-border" aria-labelledby="categories-title">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
-        <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
-          {displayCategories.map(({ config, db }) => (
-            <Link
-              key={db.id}
-              href={`/catalogue?category=${db.slug}`}
-              className="flex flex-col items-center gap-2 px-4 py-3 md:px-6 md:py-4 min-w-[100px] md:min-w-[120px] snap-center bg-surface rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
-              aria-label={`Voir ${config.name}`}
-            >
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                {config.logo ? (
-                  <LogoIcon name={config.logo} tone="brand" size={28} />
-                ) : (
-                  <svg className="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                )}
-              </div>
-              <span className="text-sm md:text-base font-medium text-foreground whitespace-nowrap">{config.name}</span>
-            </Link>
-          ))}
+    <section className="py-6" aria-label="Catégories">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <div className="relative">
+          <div
+            ref={scrollRef}
+            className={cn(
+              'flex gap-3',
+              'scrollbar-hide',
+              'lg:grid lg:grid-cols-8 lg:gap-3 lg:overflow-visible',
+              'snap-x lg:snap-none'
+            )}
+            role="list"
+          >
+            {enabledTiles.map((tile, _index) => {
+              const isPlatform = !!tile.logo
+              const logoConfig = tile.logo ? brandLogoFor(tile.logo) : null
+              const brandColor = logoConfig?.color
+
+              return (
+                <Link
+                  key={tile.slug}
+                  href={`/catalogue?category=${tile.slug}`}
+                  className={cn(
+                    'tile-depth',
+                    'flex items-center gap-3',
+                    'h-16',
+                    'w-full lg:w-auto',
+                    'min-w-[150px] lg:min-w-0',
+                    'snap-center lg:snap-none',
+                    'group',
+                    'role',
+                    'listitem'
+                  )}
+                  aria-label={tile.name}
+                >
+                  <div
+                    className={cn(
+                      'flex-shrink-0 flex items-center justify-center',
+                      'w-[36px] h-[36px] rounded-lg',
+                      'bg-gradient-to-br from-muted to-muted/60',
+                      'group-hover:shadow-lg',
+                      'transition-all duration-180'
+                    )}
+                    aria-hidden="true"
+                  >
+                    {isPlatform && logoConfig ? (
+                      <LogoIcon
+                        name={logoConfig.name}
+                        tone="mono"
+                        size={22}
+                        className={cn(
+                          'transition-colors duration-180',
+                          'text-muted-foreground',
+                          brandColor && 'group-hover:[&>svg]:text-brandColor',
+                          brandColor && `group-hover:[&>svg]:text-[${brandColor}]`
+                        )}
+                      />
+                    ) : (
+                      <span
+                        className="text-muted-foreground group-hover:text-primary transition-colors duration-180"
+                        aria-hidden="true"
+                      >
+                        {tile.icon}
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    className={cn(
+                      'text-[11px] leading-tight tracking-wide uppercase font-semibold',
+                      'max-w-[120px] lg:max-w-[140px]',
+                      'line-clamp-2',
+                      'text-muted-foreground group-hover:text-primary transition-colors duration-180',
+                      'whitespace-normal break-words'
+                    )}
+                  >
+                    {tile.name}
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Scroll arrows - only visible below lg */}
+          <div className="hidden lg:hidden absolute inset-0 pointer-events-none z-10">
+            {showLeftArrow && (
+              <button
+                onClick={scrollLeft}
+                className="absolute left-0 top-1/2 -translate-y-1/2 translate-x-[-14px] w-8 h-8 rounded-full bg-surface/90 backdrop-blur-sm shadow-lg border border-border flex items-center justify-center text-foreground hover:bg-primary/10 hover:text-primary transition-colors pointer-events-auto"
+                aria-label="Défilement gauche"
+                aria-hidden="false"
+              >
+                <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+              </button>
+            )}
+            {showRightArrow && (
+              <button
+                onClick={scrollRight}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[14px] w-8 h-8 rounded-full bg-surface/90 backdrop-blur-sm shadow-lg border border-border flex items-center justify-center text-foreground hover:bg-primary/10 hover:text-primary transition-colors pointer-events-auto"
+                aria-label="Défilement droit"
+                aria-hidden="false"
+              >
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </section>

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { LogoIcon } from './LogoIcon'
+import { CategoryDropdown } from './CategoryDropdown'
 
 interface Category {
   id: string
@@ -92,25 +93,19 @@ export function Header() {
                 <Search className="w-5 h-5 text-muted-foreground ml-2 flex-shrink-0" aria-hidden="true" />
                 <input
                   id="search"
-                  type="search"
+                  type="text"
+                  enterKeyHint="search"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Que cherchez-vous ?"
                   className="flex-1 bg-transparent border-none outline-none text-foreground placeholder-muted-foreground py-2 px-3 text-sm md:text-base min-w-0"
                 />
-                {/* Category select divider */}
                 <div className="w-px h-6 bg-border mx-2 flex-shrink-0" aria-hidden="true" />
-                <select
-                  value={selectedCategory}
-                  onChange={e => setSelectedCategory(e.target.value)}
-                  className="bg-transparent border-none outline-none text-foreground text-sm md:text-base py-2 pr-8 pe-2 cursor-pointer flex-shrink-0 appearance-none"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
-                >
-                  <option value="">Toutes catégories</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
-                  ))}
-                </select>
+                <CategoryDropdown
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onSelect={setSelectedCategory}
+                />
                 <button
                   type="submit"
                   className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity ml-2"
@@ -146,24 +141,19 @@ export function Header() {
                 <Search className="w-5 h-5 text-muted-foreground ml-2 flex-shrink-0" aria-hidden="true" />
                 <input
                   id="mobile-search"
-                  type="search"
+                  type="text"
+                  enterKeyHint="search"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Que cherchez-vous ?"
                   className="flex-1 bg-transparent border-none outline-none text-foreground placeholder-muted-foreground py-2 px-3 text-sm min-w-0"
                 />
                 <div className="w-px h-6 bg-border mx-2 flex-shrink-0" aria-hidden="true" />
-                <select
-                  value={selectedCategory}
-                  onChange={e => setSelectedCategory(e.target.value)}
-                  className="bg-transparent border-none outline-none text-foreground text-sm py-2 pr-8 pe-2 cursor-pointer flex-shrink-0 appearance-none"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
-                >
-                  <option value="">Toutes catégories</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
-                  ))}
-                </select>
+                <CategoryDropdown
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onSelect={setSelectedCategory}
+                />
                 <button
                   type="submit"
                   className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity ml-2"
