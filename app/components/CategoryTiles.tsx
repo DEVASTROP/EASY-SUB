@@ -74,7 +74,7 @@ export function CategoryTiles() {
                   href={`/catalogue?category=${tile.slug}`}
                   className={cn(
                     'tile-depth',
-                    'flex items-center gap-3',
+                   'flex items-center justify-center gap-3',
                     'h-16',
                     'w-full lg:w-auto',
                     'min-w-[150px] lg:min-w-0',
@@ -90,7 +90,6 @@ export function CategoryTiles() {
                       'flex-shrink-0 flex items-center justify-center',
                       'w-[36px] h-[36px] rounded-lg',
                       'bg-gradient-to-br from-muted to-muted/60',
-                      'group-hover:shadow-lg',
                       'transition-all duration-180'
                     )}
                     aria-hidden="true"
@@ -133,7 +132,7 @@ export function CategoryTiles() {
           </div>
 
           {/* Scroll arrows - only visible below lg */}
-          <div className="hidden lg:hidden absolute inset-0 pointer-events-none z-10">
+          <div className="lg:hidden absolute inset-0 pointer-events-none z-10">
             {showLeftArrow && (
               <button
                 onClick={scrollLeft}

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Category } from '@/types'
 import { computeMargin } from '@/lib/margin'
 import { LogoutButton } from '../../LogoutButton'
+import { ImageUploader } from '../../components/ImageUploader'
 
 function slugify(text: string): string {
   return text
@@ -397,12 +398,10 @@ export default function AdminProductPage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-2">URL de l'image</label>
-              <input
-                type="url"
+              <label className="block text-sm font-medium mb-2">Image du produit</label>
+              <ImageUploader
                 value={formData.image_url}
-                onChange={e => handleChange('image_url', e.target.value)}
-                className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                onChange={(url) => handleChange('image_url', url)}
               />
             </div>
 
