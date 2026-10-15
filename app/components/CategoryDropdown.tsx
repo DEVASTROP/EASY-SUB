@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Category } from '@/types'
 import { cn } from '@/lib/utils'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
+import { localized } from '@/lib/i18n/format'
 
 interface CategoryDropdownProps {
   categories: Category[]
@@ -13,6 +15,7 @@ interface CategoryDropdownProps {
 }
 
 export function CategoryDropdown({ categories, selectedCategory, onSelect, className }: CategoryDropdownProps) {
+  const { locale, t } = useLocale()
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -20,11 +23,11 @@ export function CategoryDropdown({ categories, selectedCategory, onSelect, class
   const listRef = useRef<HTMLUListElement>(null)
 
   const selectedCategoryObj = categories.find(c => c.slug === selectedCategory)
-  const selectedLabel = selectedCategoryObj?.name || 'Toutes catégories'
+  const selectedLabel = selectedCategoryObj ? localized(selectedCategoryObj, 'name', locale) : t.header.allCategories
 
   const allOptions = [
-    { slug: '', label: 'Toutes catégories' },
-    ...categories.map(c => ({ slug: c.slug, label: c.name })),
+    { slug: '', label: t.header.allCategories },
+    ...categories.map(c => ({ slug: c.slug, label: localized(c, 'name', locale) })),
   ]
 
   // Close on outside click
@@ -103,7 +106,7 @@ export function CategoryDropdown({ categories, selectedCategory, onSelect, class
         className="flex items-center gap-2 h-11 px-3 bg-white rounded-full shadow-sm text-foreground hover:bg-accent/50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-label="Sélectionner une catégorie"
+        aria-label={t.header.selectCategory}
       >
         <span className="text-sm truncate max-w-[160px]">{selectedLabel}</span>
         {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />}
@@ -113,7 +116,7 @@ export function CategoryDropdown({ categories, selectedCategory, onSelect, class
         <ul
           ref={listRef}
           role="listbox"
-          aria-label="Catégories"
+          aria-label={t.header.categories}
           className="absolute right-0 z-50 mt-2 w-[240px] bg-surface rounded-xl shadow-lg border border-border overflow-hidden max-h-64 overflow-auto"
         >
           {allOptions.map((option, index) => (

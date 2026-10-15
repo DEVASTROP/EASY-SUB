@@ -46,3 +46,9 @@ Small catalog website selling digital subscriptions (Gemini Pro, ChatGPT Plus, C
 - In database/admin, reference them as `/products/<filename>.jpg`
 - Use `next/image` with `fill` + `sizes` prop for responsive images
 - Add `priority` for above-the-fold images (featured product, product detail page)
+## Internationalisation (FR / EN)
+- Language is stored in the `lang` cookie ("fr" default, "en"). Server code: `getLocale()` / `getServerI18n()` from `lib/i18n/server.ts`. Client code: `useLocale()` / `useT()` from `lib/i18n/LocaleProvider.tsx`.
+- Every public text lives in `lib/i18n/dictionaries/fr.ts` and `en.ts`. The English file is typed from the French one, so a missing key is a TypeScript error. RULE: every new public text must be added to BOTH dictionaries; never hardcode French or English in public components.
+- Prices: `formatPrice()`; durations: `formatDuration()`; product/category texts: `localized(item, 'name', locale)` (falls back to French when the `_en` field is empty); all in `lib/i18n/format.ts`.
+- Admin pages stay French only and have no language switch.
+- Product English fields (`name_en`, `short_description_en`, `description_en`, `warranty_note_en`) and `categories.name_en` come from supabase/migrations/005_english_fields.sql.

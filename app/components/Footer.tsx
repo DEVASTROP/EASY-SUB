@@ -1,44 +1,60 @@
+'use client'
+
 import Link from 'next/link'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
 import { LogoIcon } from './LogoIcon'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
-  const footerLinks = {
-    Produits: [
-      { label: 'Catalogue', href: '/catalogue' },
-      { label: 'IA & Outils', href: '/catalogue?category=ia-et-outils' },
-      { label: 'Divertissement', href: '/catalogue?category=divertissement' },
-      { label: 'Jeux', href: '/catalogue?category=jeux' },
-    ],
-    Aide: [
-      { label: 'Comment commander', href: '#comment-ca-marche' },
-      { label: 'FAQ', href: '/faq' },
-      { label: 'Contact', href: '#contact' },
-    ],
-    Légal: [
-      { label: 'CGU', href: '/cgu' },
-      { label: 'Mentions légales', href: '/mentions-legales' },
-      { label: 'Confidentialité', href: '/confidentialite' },
-    ],
-  }
+  const { t } = useLocale()
+
+  const footerLinks = [
+    {
+      id: 'products',
+      title: t.footer.products,
+      links: [
+        { label: t.footer.catalogue, href: '/catalogue' },
+        { label: t.footer.aiTools, href: '/catalogue?category=ia-et-outils' },
+        { label: t.footer.entertainment, href: '/catalogue?category=divertissement' },
+        { label: t.footer.games, href: '/catalogue?category=jeux' },
+      ],
+    },
+    {
+      id: 'help',
+      title: t.footer.help,
+      links: [
+        { label: t.footer.howToOrder, href: '#comment-ca-marche' },
+        { label: t.footer.faq, href: '/faq' },
+        { label: t.footer.contact, href: '#contact' },
+      ],
+    },
+    {
+      id: 'legal',
+      title: t.footer.legal,
+      links: [
+        { label: t.footer.terms, href: '/cgu' },
+        { label: t.footer.legalNotice, href: '/mentions-legales' },
+        { label: t.footer.privacy, href: '/confidentialite' },
+      ],
+    },
+  ]
 
   return (
     <footer className="bg-background border-t border-border" role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div className="md:col-span-2">
-            <Link href="/" className="text-2xl font-bold text-primary" aria-label="EASY-SUB Accueil">
+            <Link href="/" className="text-2xl font-bold text-primary" aria-label={t.footer.homeAria}>
               EASY-SUB
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
-              Tes abonnements numériques et crédits de jeu préférés, livrés sur WhatsApp en quelques minutes.
-              Paiement Mobile Money ou dépôt bancaire.
+              {t.footer.tagline}
             </p>
           </div>
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <nav key={title} aria-labelledby={`footer-${title.toLowerCase()}`}>
-              <h3 id={`footer-${title.toLowerCase()}`} className="font-semibold mb-4">{title}</h3>
+          {footerLinks.map(({ id, title, links }) => (
+            <nav key={id} aria-labelledby={`footer-${id}`}>
+              <h3 id={`footer-${id}`} className="font-semibold mb-4">{title}</h3>
               <ul className="space-y-3">
                 {links.map(link => (
                   <li key={link.label}>
@@ -55,10 +71,10 @@ export function Footer() {
         <div className="border-t border-border pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} EASY-SUB. Tous droits réservés.
+              © {currentYear} EASY-SUB. {t.footer.rights}
             </p>
             <p className="text-xs text-muted-foreground/70">
-              Les noms de marques et logos cités appartiennent à leurs propriétaires respectifs. EASY-SUB n'est pas affilié à ces marques.
+              {t.footer.disclaimer}
             </p>
             <div className="flex items-center gap-6">
               <a

@@ -1,28 +1,17 @@
+'use client'
+
+import { useLocale } from '@/lib/i18n/LocaleProvider'
+
 export function HowItWorks() {
-  const steps = [
-    {
-      number: 1,
-      title: 'Choisis ton offre',
-      description: 'Parcours nos abonnements et crédits de jeu, sélectionne celui qui te convient'
-    },
-    {
-      number: 2,
-      title: 'Paie sur WhatsApp',
-      description: 'Contacte-nous, on t\'envoie les infos pour Mobile Money ou dépôt bancaire'
-    },
-    {
-      number: 3,
-      title: 'Reçois ton produit',
-      description: 'Livraison rapide après confirmation du paiement, directement sur WhatsApp'
-    }
-  ]
+  const { t } = useLocale()
+  const steps = t.how.steps.map((step, index) => ({ number: index + 1, ...step }))
 
   return (
     <section id="comment-ca-marche" className="py-16 md:py-24 bg-background" aria-labelledby="how-title">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <header className="text-center mb-16">
-          <h2 id="how-title" className="text-3xl md:text-4xl font-bold mb-4">Comment ça marche</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">Simple, rapide, sans prise de tête</p>
+          <h2 id="how-title" className="text-3xl md:text-4xl font-bold mb-4">{t.how.title}</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">{t.how.subtitle}</p>
         </header>
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           {steps.map(step => (

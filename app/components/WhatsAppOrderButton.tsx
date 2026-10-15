@@ -3,6 +3,7 @@
 import { PublicProduct } from '@/types'
 import { buildWhatsAppLink } from '@/lib/whatsapp'
 import { LogoIcon } from './LogoIcon'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
 
 interface WhatsAppOrderButtonProps {
   product: PublicProduct
@@ -10,7 +11,8 @@ interface WhatsAppOrderButtonProps {
 }
 
 export function WhatsAppOrderButton({ product, className = '' }: WhatsAppOrderButtonProps) {
-  const href = buildWhatsAppLink(product)
+  const { locale, t } = useLocale()
+  const href = buildWhatsAppLink(product, locale)
 
   return (
     <a
@@ -20,7 +22,7 @@ export function WhatsAppOrderButton({ product, className = '' }: WhatsAppOrderBu
       className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity ${className}`}
     >
       <LogoIcon name="whatsapp" tone="mono" size={24} />
-      Commander sur WhatsApp
+      {t.common.orderOnWhatsApp}
     </a>
   )
 }

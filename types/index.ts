@@ -1,6 +1,7 @@
 export interface Category {
   id: string
   name: string
+  name_en?: string | null
   slug: string
   sort_order: number
 }
@@ -8,10 +9,13 @@ export interface Category {
 export interface Product {
   id: string
   name: string
+  name_en?: string | null
   slug: string
   category_id: string
   short_description: string | null
+  short_description_en?: string | null
   description: string | null
+  description_en?: string | null
   duration: string
   image_url: string | null
   purchase_price_usd: number
@@ -25,6 +29,7 @@ export interface Product {
   in_stock: boolean
   is_featured: boolean
   warranty_note: string | null
+  warranty_note_en?: string | null
   created_at: string
   updated_at: string
 }
@@ -32,10 +37,13 @@ export interface Product {
 export interface PublicProduct {
   id: string
   name: string
+  name_en?: string | null
   slug: string
   category_id: string
   short_description: string | null
+  short_description_en?: string | null
   description: string | null
+  description_en?: string | null
   duration: string
   image_url: string | null
   sale_price_xof: number
@@ -45,6 +53,7 @@ export interface PublicProduct {
   in_stock: boolean
   is_featured: boolean
   warranty_note: string | null
+  warranty_note_en?: string | null
   created_at: string
   updated_at: string
 }

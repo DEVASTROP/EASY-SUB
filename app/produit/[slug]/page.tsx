@@ -5,6 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Metadata } from 'next'
 import { WhatsAppOrderButton } from '@/app/components/WhatsAppOrderButton'
+import { getServerI18n } from '@/lib/i18n/server'
+import { fill, formatDuration, formatPrice, localized } from '@/lib/i18n/format'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -12,25 +14,29 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
+  const { locale, t } = await getServerI18n()
   const supabase = await createClient()
   const { data: product } = await supabase
     .from('public_products')
-    .select('name, short_description, image_url')
+    .select('*')
     .eq('slug', slug)
     .single()
 
   if (!product) {
     return {
-      title: 'Produit introuvable - EASY-SUB',
+      title: `${t.product.notFoundTitle} - EASY-SUB`,
     }
   }
 
+  const name = localized(product, 'name', locale)
+  const description = localized(product, 'short_description', locale) || fill(t.product.discover, { name })
+
   return {
-    title: `${product.name} - EASY-SUB`,
-    description: product.short_description || `Découvrez ${product.name} sur EASY-SUB`,
+    title: `${name} - EASY-SUB`,
+    description,
     openGraph: {
-      title: `${product.name} - EASY-SUB`,
-      description: product.short_description || `Découvrez ${product.name} sur EASY-SUB`,
+      title: `${name} - EASY-SUB`,
+      description,
       images: product.image_url ? [{ url: product.image_url }] : [],
       type: 'website',
     },
@@ -54,11 +60,17 @@ async function getProduct(slug: string): Promise<PublicProduct | null> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params
+  const { locale, t } = await getServerI18n()
   const product = await getProduct(slug)
 
   if (!product) {
     notFound()
   }
+
+  const name = localized(product, 'name', locale)
+  const shortDescription = localized(product, 'short_description', locale)
+  const description = localized(product, 'description', locale)
+  const warrantyNote = localized(product, 'warranty_note', locale)
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -70,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Retour au catalogue
+          {t.product.back}
         </Link>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -79,7 +91,7 @@ export default async function ProductPage({ params }: Props) {
               <div className="aspect-square rounded-xl overflow-hidden bg-muted relative">
                 <Image
                   src={product.image_url}
-                  alt={product.name}
+                  alt={name}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -88,40 +100,40 @@ export default async function ProductPage({ params }: Props) {
               </div>
             ) : (
               <div className="aspect-square rounded-xl bg-muted flex items-center justify-center">
-                <span className="text-muted-foreground">Pas d'image</span>
+                <span className="text-muted-foreground">{t.product.noImage}</span>
               </div>
             )}
           </div>
 
           <div className="space-y-6">
             <span className="text-sm font-medium text-primary">
-              {product.is_featured && 'PRODUIT VEDETTE • '}{product.duration}
+              {product.is_featured && `${t.product.featured} • `}{formatDuration(product.duration, locale)}
             </span>
 
-            <h1 className="text-3xl md:text-4xl font-bold">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{name}</h1>
 
-            {product.short_description && (
-              <p className="text-lg text-muted-foreground">{product.short_description}</p>
+            {shortDescription && (
+              <p className="text-lg text-muted-foreground">{shortDescription}</p>
             )}
 
             <div className="flex items-baseline gap-4">
               <span className="text-4xl font-bold text-primary">
-                {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
+                {product.sale_price_xof > 0 ? formatPrice(product.sale_price_xof, locale) : t.common.priceOnRequest}
               </span>
             </div>
 
-            {product.description && (
+            {description && (
               <div className="prose prose-invert max-w-none">
-                {product.description.split('\n').map((paragraph, i) => (
+                {description.split('\n').map((paragraph, i) => (
                   <p key={i} className="mb-4">{paragraph}</p>
                 ))}
               </div>
             )}
 
-            {product.warranty_note && (
+            {warrantyNote && (
               <div className="border-l-4 border-success pl-4 py-2 bg-success/10 rounded-r-lg">
                 <p className="text-sm text-success">
-                  <strong>Garantie : </strong>{product.warranty_note}
+                  <strong>{t.product.warranty}</strong>{warrantyNote}
                 </p>
               </div>
             )}
@@ -130,7 +142,7 @@ export default async function ProductPage({ params }: Props) {
               {!product.in_stock ? (
                 <div className="flex-1">
                   <span className="inline-block w-full text-center bg-destructive/20 text-destructive px-6 py-4 rounded-lg font-semibold text-lg">
-                    Indisponible
+                    {t.common.unavailable}
                   </span>
                 </div>
               ) : (
@@ -139,7 +151,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             <p className="text-sm text-muted-foreground">
-              Pas de paiement en ligne. Le paiement (Mobile Money / dépôt bancaire) et la livraison se font manuellement sur WhatsApp.
+              {t.product.manualPayment}
             </p>
           </div>
         </div>

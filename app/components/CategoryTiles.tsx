@@ -7,8 +7,10 @@ import { categoryTilesConfig } from './categoryTiles.config'
 import { LogoIcon } from './LogoIcon'
 import { brandLogoFor } from '@/lib/logos'
 import { cn } from '@/lib/utils'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
 
 export function CategoryTiles() {
+  const { t } = useLocale()
   const [enabledTiles] = useState(() => categoryTilesConfig.filter(t => t.enabled))
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showLeftArrow, setShowLeftArrow] = useState(false)
@@ -50,7 +52,7 @@ export function CategoryTiles() {
   }
 
   return (
-    <section className="py-6" aria-label="Catégories">
+    <section className="py-6" aria-label={t.tiles.aria}>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="relative">
           <div
@@ -83,7 +85,7 @@ export function CategoryTiles() {
                     'role',
                     'listitem'
                   )}
-                  aria-label={tile.name}
+                  aria-label={t.tiles.names[tile.slug] ?? tile.name}
                 >
                   <div
                     className={cn(
@@ -124,7 +126,7 @@ export function CategoryTiles() {
                       'whitespace-normal break-words'
                     )}
                   >
-                    {tile.name}
+                    {t.tiles.names[tile.slug] ?? tile.name}
                   </span>
                 </Link>
               )
@@ -137,7 +139,7 @@ export function CategoryTiles() {
               <button
                 onClick={scrollLeft}
                 className="absolute left-0 top-1/2 -translate-y-1/2 translate-x-[-14px] w-8 h-8 rounded-full bg-surface/90 backdrop-blur-sm shadow-lg border border-border flex items-center justify-center text-foreground hover:bg-primary/10 hover:text-primary transition-colors pointer-events-auto"
-                aria-label="Défilement gauche"
+                aria-label={t.tiles.scrollLeft}
                 aria-hidden="false"
               >
                 <ChevronLeft className="w-4 h-4" aria-hidden="true" />
@@ -147,7 +149,7 @@ export function CategoryTiles() {
               <button
                 onClick={scrollRight}
                 className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[14px] w-8 h-8 rounded-full bg-surface/90 backdrop-blur-sm shadow-lg border border-border flex items-center justify-center text-foreground hover:bg-primary/10 hover:text-primary transition-colors pointer-events-auto"
-                aria-label="Défilement droit"
+                aria-label={t.tiles.scrollRight}
                 aria-hidden="false"
               >
                 <ChevronRight className="w-4 h-4" aria-hidden="true" />

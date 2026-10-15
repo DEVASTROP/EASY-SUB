@@ -12,9 +12,6 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Enable RLS on storage.objects (should already be enabled by default)
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-
 -- Policy: Public read access for product images
 CREATE POLICY "Product images are publicly accessible"
   ON storage.objects FOR SELECT

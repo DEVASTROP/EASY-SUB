@@ -5,6 +5,9 @@ import Image from 'next/image'
 import { PublicProduct, Category } from '@/types'
 import { ProductImagePlaceholder } from './ProductImagePlaceholder'
 import { brandLogoFor } from '@/lib/logos'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
+import { formatDuration, formatPrice, localized, type Locale } from '@/lib/i18n/format'
+import type { Dictionary } from '@/lib/i18n/dictionaries'
 
 const HERO_BG = '/hero-bg.jpg'
 const HERO_BG_ENABLED = true
@@ -17,19 +20,14 @@ function calculateDiscountPercent(product: PublicProduct): number {
   return 0
 }
 
-function getBadgeLabel(badge?: string): string | null {
+function getBadgeLabel(badge: string | undefined, t: Dictionary): string | null {
   if (!badge) return null
-  const labels: Record<string, string> = {
-    NOUVEAU: 'NOUVEAU',
-    PROMO: 'PROMO',
-    HOT: 'HOT',
-  }
-  return labels[badge] || null
+  return (t.common.badges as Record<string, string>)[badge] || null
 }
 
-function getCategoryName(categories: Category[], categoryId: string): string {
+function getCategoryName(categories: Category[], categoryId: string, locale: Locale, t: Dictionary): string {
   const cat = categories.find(c => c.id === categoryId)
-  return cat?.name || 'Catégorie'
+  return cat ? localized(cat, 'name', locale) : t.common.categoryFallback
 }
 
 interface HeroSectionProps {
@@ -38,6 +36,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ featuredProducts, categories }: HeroSectionProps) {
+  const { locale, t } = useLocale()
   const displayProducts = featuredProducts.slice(0, 4)
 
   if (displayProducts.length === 0) return null
@@ -71,9 +70,10 @@ export function HeroSection({ featuredProducts, categories }: HeroSectionProps) 
         <div className="flex flex-nowrap justify-center gap-6 overflow-x-auto scrollbar-hide snap-x pb-4 md:overflow-visible md:pb-0 md:flex-nowrap">
           {displayProducts.map((product, index) => {
             const discount = calculateDiscountPercent(product)
-            const badge = getBadgeLabel(product.badge ?? undefined)
+            const badge = getBadgeLabel(product.badge ?? undefined, t)
+            const productName = localized(product, 'name', locale)
             const logo = brandLogoFor(product.name)
-            const categoryName = getCategoryName(categories, product.category_id)
+            const categoryName = getCategoryName(categories, product.category_id, locale, t)
 
             return (
               <Link
@@ -120,12 +120,12 @@ export function HeroSection({ featuredProducts, categories }: HeroSectionProps) 
                 </div>
                 <div className="p-4 space-y-3">
                   <h3 className="text-lg md:text-xl font-bold uppercase leading-tight group-hover:text-primary transition-colors">
-                    {product.name}
+                    {productName}
                   </h3>
                   <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
                     <span>{categoryName}</span>
                     <span>·</span>
-                    <span>{product.duration}</span>
+                    <span>{formatDuration(product.duration, locale)}</span>
                     {product.region_label && (
                       <>
                         <span>·</span>
@@ -135,11 +135,11 @@ export function HeroSection({ featuredProducts, categories }: HeroSectionProps) 
                   </p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-bold text-foreground">
-                      {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
+                      {product.sale_price_xof > 0 ? formatPrice(product.sale_price_xof, locale) : t.common.priceOnRequest}
                     </span>
                     {product.original_price_xof && product.original_price_xof > product.sale_price_xof && (
                       <span className="text-sm text-muted-foreground line-through">
-                        {new Intl.NumberFormat('fr-FR').format(product.original_price_xof)} FCFA
+                        {formatPrice(product.original_price_xof, locale)}
                       </span>
                     )}
                   </div>

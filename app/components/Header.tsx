@@ -7,6 +7,9 @@ import { Search } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { LogoIcon } from './LogoIcon'
 import { CategoryDropdown } from './CategoryDropdown'
+import { LanguageToggle } from './LanguageToggle'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
+import { buildWhatsAppQuestionLink } from '@/lib/whatsapp'
 
 interface Category {
   id: string
@@ -17,6 +20,7 @@ interface Category {
 
 export function Header() {
   const searchParams = useSearchParams()
+  const { locale, t } = useLocale()
   const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
@@ -70,7 +74,7 @@ export function Header() {
           <Link
             href="/"
             className="flex items-center gap-2 text-xl font-bold text-primary hover:opacity-80 transition-opacity flex-shrink-0"
-            aria-label="EASY-SUB - Accueil"
+            aria-label={t.header.logoAria}
           >
             <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" aria-hidden="true">
               <rect width="32" height="32" rx="8" fill="currentColor" />
@@ -89,7 +93,7 @@ export function Header() {
           <div className={`flex-1 max-w-2xl md:max-w-3xl ${isMobile ? 'hidden' : ''}`}>
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative flex items-center bg-white rounded-full h-11 px-3 shadow-sm">
-                <label htmlFor="search" className="sr-only">Rechercher</label>
+                <label htmlFor="search" className="sr-only">{t.header.search}</label>
                 <Search className="w-5 h-5 text-muted-foreground ml-2 flex-shrink-0" aria-hidden="true" />
                 <input
                   id="search"
@@ -97,7 +101,7 @@ export function Header() {
                   enterKeyHint="search"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Que cherchez-vous ?"
+                  placeholder={t.header.searchPlaceholder}
                   className="flex-1 bg-transparent border-none outline-none text-foreground placeholder-muted-foreground py-2 px-3 text-sm md:text-base min-w-0"
                 />
                 <div className="w-px h-6 bg-border mx-2 flex-shrink-0" aria-hidden="true" />
@@ -109,7 +113,7 @@ export function Header() {
                 <button
                   type="submit"
                   className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity ml-2"
-                  aria-label="Rechercher"
+                  aria-label={t.header.search}
                 >
                   <Search className="w-5 h-5 text-white" aria-hidden="true" />
                 </button>
@@ -119,15 +123,16 @@ export function Header() {
 
           {/* WhatsApp button */}
           <div className="flex items-center gap-2 flex-shrink-0">
+            <LanguageToggle />
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent('Bonjour, j\'ai une question.')}`}
+              href={buildWhatsAppQuestionLink(locale)}
               target="_blank"
               rel="noopener noreferrer"
               className={`bg-whatsapp text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2 ${isMobile ? 'p-2' : 'px-4 py-2'}`}
-              aria-label="Nous contacter sur WhatsApp"
+              aria-label={t.common.whatsappAriaLabel}
             >
               <LogoIcon name="whatsapp" tone="mono" size={isMobile ? 24 : 20} />
-              <span className="hidden sm:inline">WhatsApp</span>
+              <span className="hidden sm:inline">{t.common.whatsappLabel}</span>
             </a>
           </div>
         </div>
@@ -137,7 +142,7 @@ export function Header() {
           <div className="pb-4">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative flex items-center bg-white rounded-full h-11 px-3 shadow-sm">
-                <label htmlFor="mobile-search" className="sr-only">Rechercher</label>
+                <label htmlFor="mobile-search" className="sr-only">{t.header.search}</label>
                 <Search className="w-5 h-5 text-muted-foreground ml-2 flex-shrink-0" aria-hidden="true" />
                 <input
                   id="mobile-search"
@@ -145,7 +150,7 @@ export function Header() {
                   enterKeyHint="search"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Que cherchez-vous ?"
+                  placeholder={t.header.searchPlaceholder}
                   className="flex-1 bg-transparent border-none outline-none text-foreground placeholder-muted-foreground py-2 px-3 text-sm min-w-0"
                 />
                 <div className="w-px h-6 bg-border mx-2 flex-shrink-0" aria-hidden="true" />
@@ -157,7 +162,7 @@ export function Header() {
                 <button
                   type="submit"
                   className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 hover:opacity-90 transition-opacity ml-2"
-                  aria-label="Rechercher"
+                  aria-label={t.header.search}
                 >
                   <Search className="w-5 h-5 text-white" aria-hidden="true" />
                 </button>

@@ -2,23 +2,34 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import './globals.css'
 import { PublicLayout } from './components/PublicLayout'
+import { LocaleProvider } from '@/lib/i18n/LocaleProvider'
+import { getLocale } from '@/lib/i18n/server'
+import { getDictionary } from '@/lib/i18n/dictionaries'
 
-export const metadata: Metadata = {
-  title: 'EASY-SUB - Abonnements numériques et crédits de jeu',
-  description: 'Catalogue d\'abonnements numériques (Gemini Pro, ChatGPT Plus, Canva Pro, Netflix) et crédits de jeu pour étudiants au Togo. Paiement Mobile Money / virement, livraison sur WhatsApp.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = getDictionary(await getLocale())
+  return {
+    title: t.site.metaTitle,
+    description: t.site.metaDescription,
+  }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const locale = await getLocale()
+  const dictionary = getDictionary(locale)
+
   return (
-    <html lang="fr">
+    <html lang={locale}>
       <body className="min-h-screen">
-        <Suspense fallback={null}>
-          <PublicLayout>{children}</PublicLayout>
-        </Suspense>
+        <LocaleProvider locale={locale} dictionary={dictionary}>
+          <Suspense fallback={null}>
+            <PublicLayout>{children}</PublicLayout>
+          </Suspense>
+        </LocaleProvider>
       </body>
     </html>
   )

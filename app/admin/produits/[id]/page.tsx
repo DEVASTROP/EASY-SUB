@@ -36,6 +36,10 @@ interface ProductFormData {
   in_stock: boolean
   is_featured: boolean
   warranty_note: string
+  name_en: string
+  short_description_en: string
+  description_en: string
+  warranty_note_en: string
 }
 
 const defaultFormData: ProductFormData = {
@@ -57,6 +61,10 @@ const defaultFormData: ProductFormData = {
   in_stock: true,
   is_featured: false,
   warranty_note: '',
+  name_en: '',
+  short_description_en: '',
+  description_en: '',
+  warranty_note_en: '',
 }
 
 export default function AdminProductPage() {
@@ -69,6 +77,8 @@ export default function AdminProductPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  // True when the products table already has the English columns (migration 005 applied)
+  const [englishColumns, setEnglishColumns] = useState(false)
   const [error, setError] = useState('')
   const [margin, setMargin] = useState({ costXof: 0, marginXof: 0, marginPercent: 0 })
   const slugEditedRef = useRef(false)
@@ -132,7 +142,12 @@ export default function AdminProductPage() {
         in_stock: data.in_stock,
         is_featured: data.is_featured,
         warranty_note: data.warranty_note || '',
+        name_en: data.name_en || '',
+        short_description_en: data.short_description_en || '',
+        description_en: data.description_en || '',
+        warranty_note_en: data.warranty_note_en || '',
       })
+      setEnglishColumns('name_en' in data)
     }
     setLoading(false)
   }
@@ -148,13 +163,35 @@ export default function AdminProductPage() {
 
     const supabase = createClient()
 
-    const payload = {
-      ...formData,
+    const {
+      name_en,
+      short_description_en,
+      description_en,
+      warranty_note_en,
+      ...baseData
+    } = formData
+
+    const payload: Record<string, unknown> = {
+      ...baseData,
       purchase_price_usd: Number(formData.purchase_price_usd),
       exchange_rate: Number(formData.exchange_rate),
       card_fees_percent: Number(formData.card_fees_percent),
       sale_price_xof: Number(formData.sale_price_xof),
     }
+
+    // English fields: only sent when filled, or when the columns exist (migration 005 applied),
+    // so saving keeps working even before the migration is run.
+    const englishFields: Record<string, string> = {
+      name_en,
+      short_description_en,
+      description_en,
+      warranty_note_en,
+    }
+    Object.entries(englishFields).forEach(([key, value]) => {
+      const trimmed = value.trim()
+      if (trimmed !== '') payload[key] = trimmed
+      else if (englishColumns) payload[key] = null
+    })
 
     let result
     if (isNew) {
@@ -414,6 +451,51 @@ export default function AdminProductPage() {
                 className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
+
+            <details className="md:col-span-2 border rounded-lg p-4 bg-muted/30">
+              <summary className="cursor-pointer text-sm font-medium">Version anglaise (optionnel)</summary>
+              <p className="text-xs text-muted-foreground mt-2 mb-4">
+                Laisse un champ vide pour afficher le texte français aussi en anglais. Exécute d&apos;abord la migration 005 dans Supabase.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Nom (EN)</label>
+                  <input
+                    type="text"
+                    value={formData.name_en}
+                    onChange={e => handleChange('name_en', e.target.value)}
+                    className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Description courte (EN)</label>
+                  <textarea
+                    value={formData.short_description_en}
+                    onChange={e => handleChange('short_description_en', e.target.value)}
+                    rows={2}
+                    className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Description complète (EN)</label>
+                  <textarea
+                    value={formData.description_en}
+                    onChange={e => handleChange('description_en', e.target.value)}
+                    rows={5}
+                    className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Note de garantie (EN)</label>
+                  <textarea
+                    value={formData.warranty_note_en}
+                    onChange={e => handleChange('warranty_note_en', e.target.value)}
+                    rows={2}
+                    className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            </details>
           </div>
 
           <div className="border-t pt-6 space-y-4">

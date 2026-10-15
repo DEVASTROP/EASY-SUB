@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { PublicProduct } from '@/types'
 import { ProductImagePlaceholder } from './ProductImagePlaceholder'
+import { useLocale } from '@/lib/i18n/LocaleProvider'
+import { formatDuration, formatPrice, localized } from '@/lib/i18n/format'
 
 interface ProductCardProps {
   product: PublicProduct
@@ -25,7 +27,9 @@ function calculateDiscountPercent(product: PublicProduct): number {
 }
 
 export function ProductCard({ product, priority = false, categoryName }: ProductCardProps) {
+  const { locale, t } = useLocale()
   const discount = calculateDiscountPercent(product)
+  const productName = localized(product, 'name', locale)
 
   return (
     <Link
@@ -48,7 +52,7 @@ export function ProductCard({ product, priority = false, categoryName }: Product
         <div className="absolute top-2 left-2 flex flex-col gap-1.5">
           {product.badge && (
             <span className={`px-2 py-1 text-xs font-bold rounded ${badgeStyles[product.badge] || 'bg-muted text-muted-foreground'}`}>
-              {product.badge}
+              {(t.common.badges as Record<string, string>)[product.badge] ?? product.badge}
             </span>
           )}
           {discount > 0 && (
@@ -59,18 +63,18 @@ export function ProductCard({ product, priority = false, categoryName }: Product
         </div>
         {!product.in_stock && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <span className="text-white font-bold text-lg px-4 py-2 bg-destructive/90 rounded-lg">Indisponible</span>
+            <span className="text-white font-bold text-lg px-4 py-2 bg-destructive/90 rounded-lg">{t.common.unavailable}</span>
           </div>
         )}
       </div>
       <div className="p-3">
         <h3 className="font-medium text-sm mb-1 line-clamp-1 group-hover:text-primary transition-colors">
-          {product.name}
+          {productName}
         </h3>
         <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap mb-1.5">
           {categoryName && <span>{categoryName}</span>}
           {categoryName && <span>·</span>}
-          <span>{product.duration}</span>
+          <span>{formatDuration(product.duration, locale)}</span>
           {product.region_label && (
             <>
               <span>·</span>
@@ -80,11 +84,11 @@ export function ProductCard({ product, priority = false, categoryName }: Product
         </p>
         <div className="flex items-baseline gap-2">
           <span className="text-base font-bold text-primary">
-            {new Intl.NumberFormat('fr-FR').format(product.sale_price_xof)} FCFA
+            {product.sale_price_xof > 0 ? formatPrice(product.sale_price_xof, locale) : t.common.priceOnRequest}
           </span>
           {product.original_price_xof && product.original_price_xof > product.sale_price_xof && (
             <span className="text-sm text-muted-foreground line-through">
-              {new Intl.NumberFormat('fr-FR').format(product.original_price_xof)} FCFA
+              {formatPrice(product.original_price_xof, locale)}
             </span>
           )}
         </div>
