@@ -67,7 +67,7 @@ export function HeroSection({ featuredProducts, categories }: HeroSectionProps) 
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
-        <div className="flex flex-nowrap justify-center gap-6 overflow-x-auto scrollbar-hide snap-x pb-4 md:overflow-visible md:pb-0 md:flex-nowrap">
+        <div className="flex flex-nowrap justify-start xl:justify-center gap-4 xl:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 xl:overflow-visible xl:pb-0">
           {displayProducts.map((product, index) => {
             const discount = calculateDiscountPercent(product)
             const badge = getBadgeLabel(product.badge ?? undefined, t)
@@ -79,7 +79,7 @@ export function HeroSection({ featuredProducts, categories }: HeroSectionProps) 
               <Link
                 key={product.id}
                 href={`/produit/${product.slug}`}
-                className="group block bg-surface/95 backdrop-blur-sm rounded-2xl overflow-hidden border border-border/50 hover:border-primary/50 hover:shadow-xl transition-all duration-300 w-[290px] flex-shrink-0 snap-center md:w-[290px]"
+                className="group block bg-surface/95 backdrop-blur-sm rounded-2xl overflow-hidden border border-border/50 hover:border-primary/50 hover:shadow-xl transition-all duration-300 w-[66vw] sm:w-[44vw] max-w-[290px] flex-shrink-0 snap-center xl:w-[290px]"
               >
                 <div className="aspect-[3/4] relative overflow-hidden bg-muted">
                   {product.image_url ? (

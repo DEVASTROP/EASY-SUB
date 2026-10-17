@@ -33,7 +33,7 @@ export function LanguageToggle({ className }: { className?: string }) {
             aria-pressed={active}
             aria-label={option === 'fr' ? t.common.languageFr : t.common.languageEn}
             className={cn(
-              'h-9 px-2.5 rounded-md uppercase transition-colors',
+              'h-9 px-2 sm:px-2.5 rounded-md uppercase transition-colors',
               active
                 ? 'bg-primary text-primary-foreground'
                 : 'text-header-foreground/80 hover:text-header-foreground hover:bg-white/10'

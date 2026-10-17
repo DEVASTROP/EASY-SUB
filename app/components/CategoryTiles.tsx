@@ -58,9 +58,9 @@ export function CategoryTiles() {
           <div
             ref={scrollRef}
             className={cn(
-              'flex gap-3',
+              'flex gap-3 overflow-x-auto pt-1 pb-3 -mb-2',
               'scrollbar-hide',
-              'lg:grid lg:grid-cols-8 lg:gap-3 lg:overflow-visible',
+              'lg:grid lg:grid-cols-8 lg:gap-3 lg:overflow-visible lg:pb-0 lg:mb-0',
               'snap-x lg:snap-none'
             )}
             role="list"

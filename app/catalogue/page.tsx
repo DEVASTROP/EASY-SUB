@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { PublicProduct, Category } from '@/types'
 import { ProductCard } from '../components/ProductCard'
 import { ProductRow } from '../components/ProductRow'
+import { FiltersToggle } from './FiltersToggle'
 import { getServerI18n } from '@/lib/i18n/server'
 import { fill, localized } from '@/lib/i18n/format'
 
@@ -181,7 +182,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
         </header>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="lg:w-64 flex-shrink-0 space-y-6">
+          <FiltersToggle>
             <div className="bg-surface p-4 rounded-xl border border-border">
               <h3 className="font-semibold mb-3">{t.catalogue.categoriesTitle}</h3>
               <nav className="space-y-2" aria-label={t.catalogue.filterAria}>
@@ -246,7 +247,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
                 })}
               </div>
             </div>
-          </aside>
+          </FiltersToggle>
 
           <section className="flex-1" aria-labelledby="products-heading">
             {products.length === 0 ? (
@@ -269,7 +270,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
                     <ProductRow key={category.id} category={category} products={catProducts} />
                   ))
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                     {products.map((product, index) => (
                       <ProductCard key={product.id} product={product} priority={index === 0} />
                     ))}

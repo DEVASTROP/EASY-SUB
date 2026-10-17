@@ -110,6 +110,7 @@ export const en: Dictionary = {
     comingSoonTitle: 'This category is coming soon',
     comingSoonText: 'New offers will be added very soon.',
     seeFullCatalogue: 'View the full catalog',
+    filtersButton: 'Filters & sort',
   },
   product: {
     back: 'Back to catalog',

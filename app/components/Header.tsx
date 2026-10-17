@@ -25,14 +25,6 @@ export function Header() {
   const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   useEffect(() => {
     async function loadCategories() {
@@ -70,7 +62,7 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* Row 1: Logo + WhatsApp (mobile) or Logo + Search + WhatsApp (desktop) */}
-        <div className="flex items-center justify-between h-16 md:h-16 gap-4">
+        <div className="flex items-center justify-between h-14 lg:h-16 gap-2 sm:gap-4">
           {/* Logo */}
           <Link
             href="/"
@@ -83,12 +75,12 @@ export function Header() {
               width={507}
               height={120}
               priority
-              className="h-9 sm:h-10 w-auto"
+              className="h-8 sm:h-10 w-auto"
             />
           </Link>
 
           {/* Search bar - middle on desktop, full width row 2 on mobile */}
-          <div className={`flex-1 max-w-2xl md:max-w-3xl ${isMobile ? 'hidden' : ''}`}>
+          <div className="hidden lg:block flex-1 min-w-0 max-w-3xl">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative flex items-center bg-white rounded-full h-11 px-3 shadow-sm">
                 <label htmlFor="search" className="sr-only">{t.header.search}</label>
@@ -126,18 +118,17 @@ export function Header() {
               href={buildWhatsAppQuestionLink(locale)}
               target="_blank"
               rel="noopener noreferrer"
-              className={`bg-whatsapp text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2 ${isMobile ? 'p-2' : 'px-4 py-2'}`}
+              className="bg-whatsapp text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2 p-2 sm:px-4 sm:py-2"
               aria-label={t.common.whatsappAriaLabel}
             >
-              <LogoIcon name="whatsapp" tone="mono" size={isMobile ? 24 : 20} />
+              <LogoIcon name="whatsapp" tone="mono" size={22} />
               <span className="hidden sm:inline">{t.common.whatsappLabel}</span>
             </a>
           </div>
         </div>
 
         {/* Row 2: Search bar on mobile only */}
-        {isMobile && (
-          <div className="pb-4">
+        <div className="lg:hidden pb-3">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative flex items-center bg-white rounded-full h-11 px-3 shadow-sm">
                 <label htmlFor="mobile-search" className="sr-only">{t.header.search}</label>
@@ -166,8 +157,7 @@ export function Header() {
                 </button>
               </div>
             </form>
-          </div>
-        )}
+        </div>
       </div>
     </header>
   )

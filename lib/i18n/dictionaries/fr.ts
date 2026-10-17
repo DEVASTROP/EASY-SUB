@@ -108,6 +108,7 @@ export const fr = {
     comingSoonTitle: 'Cette catégorie arrive bientôt',
     comingSoonText: 'De nouvelles offres seront ajoutées très vite.',
     seeFullCatalogue: 'Voir tout le catalogue',
+    filtersButton: 'Filtres et tri',
   },
   product: {
     back: 'Retour au catalogue',

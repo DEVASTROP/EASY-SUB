@@ -18,7 +18,7 @@ export function ProductRow({ category, products }: ProductRowProps) {
   const hasMore = products.length > 5
 
   return (
-    <div className="mb-16">
+    <div className="mb-10 md:mb-16">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl md:text-3xl font-bold">{categoryName}</h2>
         {hasMore && (
@@ -33,7 +33,7 @@ export function ProductRow({ category, products }: ProductRowProps) {
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         {visibleProducts.map((product, index) => (
           <ProductCard key={product.id} product={product} priority={index === 0} categoryName={categoryName} />
         ))}
