@@ -135,6 +135,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
       title,
       description: t.catalogue.metaDescription,
       type: 'website',
+      images: ['/og-image.png'],
     },
   }
 }

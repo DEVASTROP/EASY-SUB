@@ -52,3 +52,8 @@ Small catalog website selling digital subscriptions (Gemini Pro, ChatGPT Plus, C
 - Prices: `formatPrice()`; durations: `formatDuration()`; product/category texts: `localized(item, 'name', locale)` (falls back to French when the `_en` field is empty); all in `lib/i18n/format.ts`.
 - Admin pages stay French only and have no language switch.
 - Product English fields (`name_en`, `short_description_en`, `description_en`, `warranty_note_en`) and `categories.name_en` come from supabase/migrations/005_english_fields.sql.
+
+## Brand assets
+- Sources: public/logo.png (full logo, designed for DARK backgrounds: the word EASY is white) and public/favicon.png (violet E mark). Do not edit them.
+- Generated assets: app/icon.png, app/apple-icon.png, app/favicon.ico (browser icons, picked up automatically by Next.js), public/logo-header.png (wordmark without tagline, used in the dark header), public/logo-footer.png (full logo recolored for light backgrounds, used in the footer), public/brand-mark.png (violet mark alone), public/og-image.png (1200x630 link preview), public/hero-bg.jpg (optimised JPEG).
+- NEXT_PUBLIC_SITE_URL must be set to the real site URL in production (Vercel) for link previews.

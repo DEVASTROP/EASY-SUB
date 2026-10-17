@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
@@ -73,20 +74,17 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2 text-xl font-bold text-primary hover:opacity-80 transition-opacity flex-shrink-0"
+            className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0"
             aria-label={t.header.logoAria}
           >
-            <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <rect width="32" height="32" rx="8" fill="currentColor" />
-              <path
-                d="M8 16L14 22L24 10"
-                stroke="hsl(var(--color-header-foreground))"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="hidden sm:block">EASY-SUB</span>
+            <Image
+              src="/logo-header.png"
+              alt="EASY-SUB"
+              width={507}
+              height={120}
+              priority
+              className="h-9 sm:h-10 w-auto"
+            />
           </Link>
 
           {/* Search bar - middle on desktop, full width row 2 on mobile */}

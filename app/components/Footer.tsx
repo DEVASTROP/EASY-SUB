@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useLocale } from '@/lib/i18n/LocaleProvider'
 import { LogoIcon } from './LogoIcon'
 
@@ -45,8 +46,14 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div className="md:col-span-2">
-            <Link href="/" className="text-2xl font-bold text-primary" aria-label={t.footer.homeAria}>
-              EASY-SUB
+            <Link href="/" className="inline-block" aria-label={t.footer.homeAria}>
+              <Image
+                src="/logo-footer.png"
+                alt="EASY-SUB"
+                width={507}
+                height={120}
+                className="h-12 md:h-14 w-auto"
+              />
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
               {t.footer.tagline}
@@ -54,11 +61,11 @@ export function Footer() {
           </div>
           {footerLinks.map(({ id, title, links }) => (
             <nav key={id} aria-labelledby={`footer-${id}`}>
-              <h3 id={`footer-${id}`} className="font-semibold mb-4">{title}</h3>
+              <h3 id={`footer-${id}`} className="font-semibold text-primary mb-4">{title}</h3>
               <ul className="space-y-3">
                 {links.map(link => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                       {link.label}
                     </Link>
                   </li>
@@ -79,7 +86,7 @@ export function Footer() {
             <div className="flex items-center gap-6">
               <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -88,7 +95,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -97,7 +104,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -108,7 +115,7 @@ export function Footer() {
               </a>
               <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="WhatsApp"
               >
                 <LogoIcon name="whatsapp" tone="mono" size={20} />
